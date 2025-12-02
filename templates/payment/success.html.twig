@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Paiement Réussi</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <style>
+        .success-icon {
+            font-size: 100px;
+            color: #28a745;
+            animation: scaleIn 0.5s ease-in-out;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        .success-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 50px;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center;">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="success-card text-center">
+                    <i class="zmdi zmdi-check-circle success-icon"></i>
+                    
+                    <h2 class="mtext-105 cl2 p-t-30">Paiement Réussi!</h2>
+                    
+                    <p class="stext-113 cl6 p-t-20 p-b-10">
+                        Merci pour votre commande!<br>
+                        Votre paiement a été traité avec succès.
+                    </p>
+                    
+                    <div class="bor10 p-all-30 m-t-30 m-b-30" style="background: #f8f9fa; text-align: left;">
+                        <h5 class="mtext-107 cl2 p-b-20">Détails de la commande</h5>
+                        
+                        <div class="flex-w flex-sb-m p-b-10">
+                            <span class="stext-102 cl6">Numéro de commande:</span>
+                            <span class="stext-102 cl2"><strong>{{ order.orderNumber }}</strong></span>
+                        </div>
+                        
+                        <div class="flex-w flex-sb-m p-b-10">
+                            <span class="stext-102 cl6">Date:</span>
+                            <span class="stext-102 cl2">{{ order.createdAt|date('d/m/Y à H:i') }}</span>
+                        </div>
+                        
+                        <div class="flex-w flex-sb-m p-b-10">
+                            <span class="stext-102 cl6">Total payé:</span>
+                            <span class="mtext-110 cl2">{{ order.total|number_format(2) }}€</span>
+                        </div>
+                        
+                        <div class="flex-w flex-sb-m p-b-10">
+                            <span class="stext-102 cl6">Statut:</span>
+                            <span class="badge bg-success">Payé</span>
+                        </div>
+                        
+                        {% if session.customer_details.email %}
+                        <div class="p-t-20 bor12">
+                            <p class="stext-102 cl6">
+                                <i class="zmdi zmdi-email m-r-5"></i>
+                                Un email de confirmation a été envoyé à:<br>
+                                <strong>{{ session.customer_details.email }}</strong>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex-w flex-c-m">
+                        <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-r-10">
+                            <i class="zmdi zmdi-home m-r-5"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

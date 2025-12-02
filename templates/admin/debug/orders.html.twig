@@ -1,0 +1,118 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Debug - Vérification des commandes{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">🔍 Debug - Vérification des commandes</h1>
+
+    <!-- Informations utilisateur -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">👤 Utilisateur connecté</h5>
+        </div>
+        <div class="card-body">
+            {% if user %}
+                <p><strong>Email:</strong> {{ user.userIdentifier }}</p>
+                <p><strong>Rôles:</strong> {{ roles|join(', ') }}</p>
+                <p><strong>A le rôle ROLE_ADMIN:</strong> 
+                    <span class="badge bg-{{ 'ROLE_ADMIN' in roles ? 'success' : 'danger' }}">
+                        {{ 'ROLE_ADMIN' in roles ? 'OUI ✓' : 'NON ✗' }}
+                    </span>
+                </p>
+            {% else %}
+                <p class="text-danger">❌ Aucun utilisateur connecté</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📊 Nombre de commandes</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Via Repository (findAll):</strong> {{ orders_count_repo }}</p>
+                    <p><strong>Via SQL direct:</strong> {{ orders_count_sql }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toutes les commandes -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">📦 Toutes les commandes ({{ all_orders|length }})</h5>
+        </div>
+        <div class="card-body">
+            {% if all_orders|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>N° Commande</th>
+                                <th>Client</th>
+                                <th>Email</th>
+                                <th>Total</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in all_orders %}
+                            <tr>
+                                <td>{{ order.id }}</td>
+                                <td><strong>{{ order.orderNumber }}</strong></td>
+                                <td>{{ order.customerName ?? 'N/A' }}</td>
+                                <td>{{ order.customerEmail ?? 'N/A' }}</td>
+                                <td>{{ order.total|number_format(2) }}€</td>
+                                <td>
+                                    <span class="badge bg-{{ order.status == 'completed' ? 'success' : (order.status == 'pending' ? 'warning' : 'info') }}">
+                                        {{ order.statusLabel }}
+                                    </span>
+                                </td>
+                                <td>{{ order.createdAt|date('d/m/Y H:i:s') }}</td>
+                                <td>{{ order.orderItems|length }} article(s)</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    ⚠️ Aucune commande trouvée en base de données
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">🔧 Actions de diagnostic</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Que faire si la liste est vide ?</strong></p>
+            <ol>
+                <li>Créez une commande de test depuis l'interface utilisateur</li>
+                <li>Vérifiez les logs : <code>var/log/dev.log</code></li>
+                <li>Vérifiez que la table existe : <code>php bin/console doctrine:schema:validate</code></li>
+                <li>Créez les tables si nécessaire : <code>php bin/console doctrine:schema:update --force</code></li>
+            </ol>
+            
+            <div class="mt-3">
+                <a href="{{ path('admin_orders_index') }}" class="btn btn-primary">
+                    <i class="fa fa-arrow-left"></i> Aller à la liste normale des commandes
+                </a>
+                <a href="{{ path('app_cart_checkout') }}" class="btn btn-success" target="_blank">
+                    <i class="fa fa-shopping-cart"></i> Créer une commande de test
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

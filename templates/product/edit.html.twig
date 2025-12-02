@@ -1,0 +1,50 @@
+{% extends 'product.html.twig' %}
+
+{% block title %}Modifier Produit{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 m-lr-auto">
+            <div class="bor10 p-lr-40 p-t-30 p-b-40 m-lr-0-xl">
+                <h4 class="mtext-109 cl2 p-b-30">Modifier le produit</h4>
+
+                {{ form_start(form, {'attr': {'class': 'product-form'}}) }}
+                    
+                    <div class="bor8 m-b-20 how-pos4-parent">
+                        {{ form_label(form.text, 'Texte à imprimer', {'label_attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-15'}}) }}
+                        {{ form_widget(form.text, {'attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-62 p-r-30', 'placeholder': 'Entrez le texte'}}) }}
+                    </div>
+
+                    <div class="flex-w flex-m m-b-20">
+                        <div class="bor8 m-r-20 how-pos4-parent" style="flex: 1;">
+                            {{ form_label(form.largeur, 'Largeur (cm)', {'label_attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-15'}}) }}
+                            {{ form_widget(form.largeur, {'attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-62 p-r-30', 'placeholder': 'Largeur'}}) }}
+                        </div>
+
+                        <div class="bor8 how-pos4-parent" style="flex: 1;">
+                            {{ form_label(form.hauteur, 'Hauteur (cm)', {'label_attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-15'}}) }}
+                            {{ form_widget(form.hauteur, {'attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-62 p-r-30', 'placeholder': 'Hauteur'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="bor8 m-b-30 how-pos4-parent">
+                        {{ form_label(form.typeEcriture, 'Type d\'écriture', {'label_attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-15'}}) }}
+                        {{ form_widget(form.typeEcriture, {'attr': {'class': 'stext-111 cl2 plh3 size-116 p-l-62 p-r-30', 'placeholder': 'Type de police'}}) }}
+                    </div>
+
+                    <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer m-r-10">
+                        <i class="zmdi zmdi-check m-r-5"></i> Mettre à jour
+                    </button>
+                    <a href="{{ path('app_product_index') }}" class="flex-c-m stext-101 cl2 size-121 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-r-10">
+                        <i class="zmdi zmdi-arrow-left m-r-5"></i> Retour
+                    </a>
+
+                {{ form_end(form) }}
+
+                <div class="p-t-20">
+                    {{ include('product/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

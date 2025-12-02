@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Finaliser la commande</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/sweetalert/sweetalert.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+</head>
+<body class="animsition">
+
+    {% include 'includes/header.html.twig' %}
+
+    <div class="container">
+        <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+            <a href="{{ path('app_home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Accueil
+                <i class="fa fa-angle-right m-l-9 m-r-10"></i>
+            </a>
+            <a href="{{ path('app_cart') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Panier
+                <i class="fa fa-angle-right m-l-9 m-r-10"></i>
+            </a>
+            <span class="stext-109 cl4">Finaliser</span>
+        </div>
+    </div>
+
+    <section class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <div class="row">
+                <!-- Formulaire -->
+                <div class="col-lg-7 m-b-50">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 how-shadow1">
+                        <h2 class="ltext-109 cl2 p-b-10">
+                            <i class="zmdi zmdi-account m-r-10"></i>Vos informations
+                        </h2>
+                        <p class="stext-102 cl6 p-b-30">Remplissez vos coordonnées pour finaliser votre commande</p>
+
+                        <form id="checkout-form">
+                            <div class="p-b-20">
+                                <label class="stext-102 cl3 p-b-5">Nom complet *</label>
+                                <div class="bor8 how-pos4-parent">
+                                    <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="name" id="customer-name" placeholder="Ex: Jean Dupont" required minlength="3">
+                                </div>
+                            </div>
+
+                            <div class="p-b-20">
+                                <label class="stext-102 cl3 p-b-5">Email *</label>
+                                <div class="bor8 how-pos4-parent">
+                                    <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="email" name="email" id="customer-email" placeholder="Ex: jean.dupont@email.com" required>
+                                </div>
+                            </div>
+
+                            <div class="p-b-20">
+                                <label class="stext-102 cl3 p-b-5">Téléphone</label>
+                                <div class="bor8 how-pos4-parent">
+                                    <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="tel" name="phone" id="customer-phone" placeholder="Ex: 06 12 34 56 78">
+                                </div>
+                            </div>
+
+                            <div class="p-b-30">
+                                <label class="stext-102 cl3 p-b-5">Notes ou instructions (optionnel)</label>
+                                <div class="bor8">
+                                    <textarea class="stext-111 cl2 plh3 size-120 p-lr-20 p-tb-15" name="notes" id="customer-notes" rows="4" placeholder="Indiquez ici toute information complémentaire pour votre commande..."></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer w-full" id="submit-order-btn">
+                                <i class="zmdi zmdi-check m-r-5"></i> Confirmer la commande
+                            </button>
+                            
+                            <p class="stext-102 cl6 txt-center p-t-20">
+                                <i class="zmdi zmdi-lock m-r-5"></i>Vos informations sont sécurisées
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Résumé -->
+                <div class="col-lg-5 m-b-50">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 how-shadow1">
+                        <h4 class="mtext-109 cl2 p-b-10">
+                            <i class="zmdi zmdi-shopping-cart m-r-10"></i>Résumé de la commande
+                        </h4>
+                        <p class="stext-102 cl6 p-b-20">{{ cart.cartItems|length }} article(s) dans votre panier</p>
+
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            {% for item in cart.cartItems %}
+                            <div class="flex-w flex-t bor12 p-b-13 p-t-13">
+                                <div class="size-w-15 m-r-15">
+                                    <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.text }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="stext-104 cl2 p-b-5">{{ item.product.text }}</p>
+                                    <p class="stext-102 cl6">
+                                        <i class="zmdi zmdi-ruler zmdi-hc-fw"></i> {{ item.product.largeur }}×{{ item.product.hauteur }}cm
+                                        {% if item.product.modeleName %}
+                                            <br><i class="zmdi zmdi-collection-text zmdi-hc-fw"></i> {{ item.product.modeleName }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="stext-102 cl3 p-t-5">
+                                        <strong>{{ item.quantity }} × {{ item.price|number_format(2) }}€ = {{ item.subtotal|number_format(2) }}€</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="flex-w flex-t p-t-27 p-b-10">
+                            <div class="size-208">
+                                <span class="stext-110 cl2">Sous-total:</span>
+                            </div>
+                            <div class="size-209 p-t-1">
+                                <span class="stext-110 cl2">{{ cart.total|number_format(2) }}€</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-w flex-t p-b-30">
+                            <div class="size-208">
+                                <span class="stext-110 cl2">Livraison:</span>
+                            </div>
+                            <div class="size-209 p-t-1">
+                                <span class="stext-110 cl5">Gratuite</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                            <div class="size-208">
+                                <span class="mtext-101 cl2">Total:</span>
+                            </div>
+                            <div class="size-209 p-t-1">
+                                <span class="mtext-110 cl2">{{ cart.total|number_format(2) }}€</span>
+                            </div>
+                        </div>
+
+                        <div class="p-t-20">
+                            <p class="stext-102 cl6">
+                                <i class="zmdi zmdi-time zmdi-hc-fw"></i> Traitement sous 24-48h<br>
+                                <i class="zmdi zmdi-check zmdi-hc-fw"></i> Qualité garantie
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'includes/footer.html.twig' %}
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+    <script src="{{ asset('vendor/sweetalert/sweetalert.min.js') }}"></script>
+    <script>
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validation côté client
+        const name = this.querySelector('input[name="name"]').value.trim();
+        const email = this.querySelector('input[name="email"]').value.trim();
+        
+        if (!name) {
+            swal("Erreur", "Veuillez entrer votre nom", "error");
+            return;
+        }
+        
+        if (!email) {
+            swal("Erreur", "Veuillez entrer votre email", "error");
+            return;
+        }
+        
+        // Désactiver le bouton pendant le traitement
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="zmdi zmdi-refresh zmdi-hc-spin m-r-5"></i> Création en cours...';
+        
+        const formData = new FormData(this);
+        
+        fetch('/cart/create-order', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                swal({
+                    title: "Commande créée!",
+                    text: "Votre commande N°" + data.orderNumber + " a été créée avec succès!",
+                    icon: "success",
+                    button: "Voir ma commande"
+                }).then(() => {
+                    window.location.href = '/cart/order-success/' + data.orderId;
+                });
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                swal("Erreur", data.message, "error");
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            swal("Erreur", "Une erreur est survenue lors de la création de la commande", "error");
+        });
+    });
+    </script>
+</body>
+</html>

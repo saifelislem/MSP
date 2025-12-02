@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} - MSP</title>
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <style>
+        body { background: #f8f9fa; }
+        .sidebar { min-height: 100vh; background: #343a40; }
+        .sidebar .nav-link { color: #adb5bd; padding: 1rem; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: #495057; }
+        .main-content { padding: 2rem; }
+        .stat-card { border-left: 4px solid #007bff; }
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.warning { border-left-color: #ffc107; }
+        .stat-card.danger { border-left-color: #dc3545; }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <h5 class="text-white px-3 mb-4">MSP Admin</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_dashboard' ? 'active' : '' }}" href="{{ path('admin_dashboard') }}">
+                                <i class="fa fa-dashboard"></i> Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_orders' ? 'active' : '' }}" href="{{ path('admin_orders_index') }}">
+                                <i class="fa fa-shopping-cart"></i> Commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_modeles' ? 'active' : '' }}" href="{{ path('admin_modeles_index') }}">
+                                <i class="fa fa-cube"></i> Modèles de lettres
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link" href="{{ path('app_home') }}" target="_blank">
+                                <i class="fa fa-external-link"></i> Voir le site
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_logout') }}">
+                                <i class="fa fa-sign-out"></i> Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto main-content">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

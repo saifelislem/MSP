@@ -1,0 +1,247 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Commandes{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📦 Gestion des Commandes</h1>
+    <div>
+        <span class="badge bg-info" id="last-update">Dernière mise à jour: maintenant</span>
+        <button class="btn btn-sm btn-primary ms-2" onclick="location.reload()">
+            <i class="fa fa-refresh"></i> Actualiser
+        </button>
+    </div>
+</div>
+
+<!-- Résumé rapide -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Total commandes</h5>
+                <p class="card-text display-6"><strong>{{ totalOrders|default(0) }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">En attente</h5>
+                <p class="card-text display-6"><strong>{{ pendingCount|default(0) }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Terminées</h5>
+                <p class="card-text display-6"><strong>{{ completedCount|default(0) }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">CA total</h5>
+                <p class="card-text display-6"><strong>{{ totalRevenue is defined ? (totalRevenue|number_format(2)) ~ '€' : '--' }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="btn-group" role="group">
+            <a href="{{ path('admin_orders_index') }}" class="btn btn-{{ current_status is null ? 'primary' : 'outline-primary' }}">
+                Toutes
+            </a>
+            <a href="{{ path('admin_orders_index', {status: 'pending'}) }}" class="btn btn-{{ current_status == 'pending' ? 'warning' : 'outline-warning' }}">
+                En attente
+            </a>
+            <a href="{{ path('admin_orders_index', {status: 'processing'}) }}" class="btn btn-{{ current_status == 'processing' ? 'info' : 'outline-info' }}">
+                En cours
+            </a>
+            <a href="{{ path('admin_orders_index', {status: 'completed'}) }}" class="btn btn-{{ current_status == 'completed' ? 'success' : 'outline-success' }}">
+                Terminées
+            </a>
+            <a href="{{ path('admin_orders_index', {status: 'cancelled'}) }}" class="btn btn-{{ current_status == 'cancelled' ? 'danger' : 'outline-danger' }}">
+                Annulées
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des commandes -->
+<div class="card">
+    <div class="card-body">
+        <!-- DEBUG: Nombre de commandes = {{ orders|length }} -->
+        {% if orders|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Email</th>
+                            <th>Articles</th>
+                            <th>Total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><strong>{{ order.orderNumber }}</strong></td>
+                            <td>{{ order.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ order.customerName ?? 'N/A' }}</td>
+                            <td>{{ order.customerEmail ?? 'N/A' }}</td>
+                            <td>{{ order.orderItems|length }}</td>
+                            <td><strong>{{ order.total|number_format(2) }}€</strong></td>
+                            <td>
+                                <span class="badge bg-{{ order.status == 'completed' ? 'success' : (order.status == 'pending' ? 'warning' : (order.status == 'cancelled' ? 'danger' : 'info')) }}">
+                                    {{ order.statusLabel }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_orders_show', {id: order.id}) }}" class="btn btn-sm btn-primary mb-2 d-block">
+                                    <i class="fa fa-eye"></i> Voir
+                                </a>
+
+                                <form method="post" action="{{ path('admin_orders_update_status', {id: order.id}) }}" class="status-form">
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="pending" {{ order.status == 'pending' ? 'selected' : '' }}>En attente</option>
+                                        <option value="processing" {{ order.status == 'processing' ? 'selected' : '' }}>En cours</option>
+                                        <option value="completed" {{ order.status == 'completed' ? 'selected' : '' }}>Terminée</option>
+                                        <option value="cancelled" {{ order.status == 'cancelled' ? 'selected' : '' }}>Annulée</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucune commande trouvée.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Auto-refresh toutes les 30 secondes pour voir les nouvelles commandes
+        let autoRefreshInterval;
+        let lastUpdateTime = new Date();
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const diff = Math.floor((now - lastUpdateTime) / 1000);
+            const badge = document.getElementById('last-update');
+            if (badge) {
+                if (diff < 60) {
+                    badge.textContent = `Dernière mise à jour: il y a ${diff}s`;
+                } else {
+                    const minutes = Math.floor(diff / 60);
+                    badge.textContent = `Dernière mise à jour: il y a ${minutes}min`;
+                }
+            }
+        }
+
+        function startAutoRefresh() {
+            // Mettre à jour le temps toutes les secondes
+            setInterval(updateLastUpdateTime, 1000);
+            
+            // Auto-refresh toutes les 30 secondes
+            autoRefreshInterval = setInterval(() => {
+                console.log('Auto-refresh des commandes...');
+                location.reload();
+            }, 30000); // 30 secondes
+        }
+
+        // Notification pour nouvelles commandes
+        function checkNewOrders() {
+            const currentCount = {{ orders|length }};
+            const savedCount = localStorage.getItem('orderCount');
+            
+            if (savedCount && parseInt(savedCount) < currentCount) {
+                // Nouvelle commande détectée!
+                if (typeof swal !== 'undefined') {
+                    swal({
+                        title: "Nouvelle commande!",
+                        text: "Une nouvelle commande vient d'arriver",
+                        icon: "info",
+                        button: "Voir"
+                    });
+                }
+            }
+            
+            localStorage.setItem('orderCount', currentCount);
+        }
+
+        // Soumission AJAX des formulaires de changement de statut
+        document.addEventListener('DOMContentLoaded', function() {
+            startAutoRefresh();
+            checkNewOrders();
+            document.querySelectorAll('.status-form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const fd = new FormData(form);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: fd,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Mettre à jour le badge de statut sur la même ligne
+                            const row = form.closest('tr');
+                            if (row) {
+                                const badgeCell = row.querySelector('td:nth-child(7) .badge');
+                                if (badgeCell) {
+                                    const status = data.newStatus;
+                                    const labels = {
+                                        'pending': 'En attente',
+                                        'processing': 'En cours',
+                                        'completed': 'Terminée',
+                                        'cancelled': 'Annulée'
+                                    };
+                                    const classes = {
+                                        'pending': 'bg-warning',
+                                        'processing': 'bg-info',
+                                        'completed': 'bg-success',
+                                        'cancelled': 'bg-danger'
+                                    };
+                                    // Remplacer classes
+                                    badgeCell.textContent = labels[status] || status;
+                                    // remove existing bg-* classes and add new
+                                    badgeCell.className = 'badge ' + (classes[status] || 'bg-secondary');
+                                }
+                            }
+                            // petit retour visuel
+                            alert('Statut mis à jour');
+                        } else {
+                            alert('Erreur: ' + (data.message || 'Impossible de mettre à jour'));
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Erreur réseau lors de la mise à jour du statut');
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

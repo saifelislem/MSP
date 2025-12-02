@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Nouveau Produit</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/linearicons-v1.0.0/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/css-hamburgers/hamburgers.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/daterangepicker/daterangepicker.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/slick/slick.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/MagnificPopup/magnific-popup.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+</head>
+<body class="animsition">
+
+    {% include 'includes/header.html.twig' %}
+
+    <!-- breadcrumb -->
+    <div class="container">
+        <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+            <a href="{{ path('app_homecontroller') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Accueil
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <a href="{{ path('app_product_index') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Produits
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">Nouveau Produit</span>
+        </div>
+    </div>
+
+    <!-- Product Form -->
+    <section class="sec-product-detail bg0 p-t-65 p-b-60">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-lg-6 p-r-30">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 m-lr-0-xl bg0 how-shadow1">
+                        <h4 class="mtext-105 cl2 p-b-14 txt-center">Créer un nouveau produit</h4>
+                        <div class="bor12 p-t-15 p-b-15"></div>
+                        
+                        {{ form_start(form, {'attr': {'class': 'product-form'}}) }}
+                        
+                        <!-- Texte à imprimer -->
+                        <div class="p-t-33">
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    {{ form_label(form.text, 'Texte à imprimer') }}
+                                </div>
+                                <div class="size-204 respon6-next">
+                                    <div class="bor8 p-lr-15 p-tb-10">
+                                        {{ form_widget(form.text, {'attr': {'class': 'stext-111 cl2 plh3 w-full', 'placeholder': 'Entrez le texte à imprimer', 'onchange': 'updatePreview()'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dimensions -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Dimensions
+                                </div>
+                                <div class="size-204 respon6-next">
+                                    <div class="flex-w">
+                                        <div class="bor8 m-r-20 p-lr-15 p-tb-10" style="flex: 1;">
+                                            {{ form_label(form.largeur, 'Largeur (cm)', {'label_attr': {'class': 'stext-102 cl3 p-b-5'}}) }}
+                                            {{ form_widget(form.largeur, {'attr': {'class': 'stext-111 cl2 plh3 w-full', 'placeholder': 'Largeur', 'onchange': 'updatePreview()'}}) }}
+                                        </div>
+                                        <div class="bor8 p-lr-15 p-tb-10" style="flex: 1;">
+                                            {{ form_label(form.hauteur, 'Hauteur (cm)', {'label_attr': {'class': 'stext-102 cl3 p-b-5'}}) }}
+                                            {{ form_widget(form.hauteur, {'attr': {'class': 'stext-111 cl2 plh3 w-full', 'placeholder': 'Hauteur', 'onchange': 'updatePreview()'}}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Type d'écriture -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    {{ form_label(form.typeEcriture, 'Type d\'écriture') }}
+                                </div>
+                                <div class="size-204 respon6-next">
+                                    <div class="bor8 p-lr-15 p-tb-10">
+                                        {{ form_widget(form.typeEcriture, {'attr': {'class': 'stext-111 cl2 plh3 w-full', 'placeholder': 'Type de police/écriture', 'onchange': 'updatePreview()'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-204 flex-w flex-m respon6-next">
+                                    <button type="submit" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 m-r-10">
+                                        <i class="zmdi zmdi-check m-r-5"></i> Enregistrer le produit
+                                    </button>
+                                    <a href="{{ path('app_product_index') }}" class="flex-c-m stext-101 cl2 size-101 bg8 bor13 hov-btn3 p-lr-15 trans-04">
+                                        <i class="zmdi zmdi-arrow-left m-r-5"></i> Retour
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <!-- Image de prévisualisation -->
+                <div class="col-md-4 col-lg-6 p-l-30">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 m-lr-0-xl bg0 how-shadow1">
+                        <h4 class="mtext-105 cl2 p-b-14 txt-center">Aperçu du produit</h4>
+                        <div class="bor12 p-t-15 p-b-15"></div>
+                        <div class="wrap-pic-w pos-relative p-t-20">
+                            <img src="{{ asset('images/product-detail-01.jpg') }}" alt="Aperçu produit" class="w-full">
+                            <div class="p-t-20">
+                                <p class="stext-102 cl6 txt-center">Votre texte personnalisé sera imprimé selon les dimensions et le type d'écriture choisis.</p>
+                                <div class="flex-w flex-c-m p-t-15">
+                                    <div class="size-208 p-lr-10">
+                                        <span class="stext-102 cl3">Largeur:</span>
+                                        <span class="stext-102 cl2" id="preview-width">-- cm</span>
+                                    </div>
+                                    <div class="size-208 p-lr-10">
+                                        <span class="stext-102 cl3">Hauteur:</span>
+                                        <span class="stext-102 cl2" id="preview-height">-- cm</span>
+                                    </div>
+                                </div>
+                                <div class="p-t-10 txt-center">
+                                    <span class="stext-102 cl3">Police:</span>
+                                    <span class="stext-102 cl2" id="preview-font">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'includes/footer.html.twig' %}
+
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+        <span class="symbol-btn-back-to-top">
+            <i class="zmdi zmdi-chevron-up"></i>
+        </span>
+    </div>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/popper.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/daterangepicker/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/daterangepicker/daterangepicker.js') }}"></script>
+    <script src="{{ asset('vendor/slick/slick.min.js') }}"></script>
+    <script src="{{ asset('js/slick-custom.js') }}"></script>
+    <script src="{{ asset('vendor/parallax100/parallax100.js') }}"></script>
+    <script src="{{ asset('vendor/MagnificPopup/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ asset('vendor/isotope/isotope.pkgd.min.js') }}"></script>
+    <script src="{{ asset('vendor/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+
+    <script>
+        function updatePreview() {
+            // Récupérer les valeurs des champs
+            const largeur = document.querySelector('input[name="product[largeur]"]').value;
+            const hauteur = document.querySelector('input[name="product[hauteur]"]').value;
+            const typeEcriture = document.querySelector('input[name="product[typeEcriture]"]').value;
+            
+            // Mettre à jour l'aperçu
+            document.getElementById('preview-width').textContent = largeur ? largeur + ' cm' : '-- cm';
+            document.getElementById('preview-height').textContent = hauteur ? hauteur + ' cm' : '-- cm';
+            document.getElementById('preview-font').textContent = typeEcriture ? typeEcriture : '--';
+        }
+        
+        // Initialiser la prévisualisation au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!-- Sidebar Panier -->
+<aside class="wrap-sidebar js-sidebar">
+    <div class="s-full js-hide-sidebar"></div>
+
+    <div class="sidebar flex-col-l p-t-22 p-b-25">
+        <div class="flex-r w-full p-b-30 p-r-27">
+            <div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-sidebar">
+                <i class="zmdi zmdi-close"></i>
+            </div>
+        </div>
+
+        <div class="sidebar-content flex-w w-full p-lr-65 js-pscroll">
+            <!-- Titre du panier -->
+            <div class="w-full p-b-20">
+                <h4 class="mtext-105 cl2">
+                    <i class="zmdi zmdi-shopping-cart m-r-10"></i>Mon Panier
+                </h4>
+            </div>
+
+            <!-- Produits en attente de confirmation -->
+            <div id="pending-products-container" class="w-full" style="display: none;">
+                <div class="bg-warning p-all-15 m-b-20 bor10">
+                    <div class="flex-w flex-sb-m p-b-10">
+                        <h5 class="mtext-107 cl2">
+                            <i class="zmdi zmdi-time m-r-5"></i><span id="pending-count">0</span> Produit(s) à confirmer
+                        </h5>
+                        <span class="stext-102 cl6">
+                            <i class="zmdi zmdi-info"></i> Vérifiez avant de confirmer
+                        </span>
+                    </div>
+                    
+                    <!-- Liste des produits en attente -->
+                    <div id="pending-products-list"></div>
+                    
+                    <div class="flex-w flex-sb-m p-t-10">
+                        <button class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-5" onclick="confirmAllPendingProducts()" id="confirm-all-btn">
+                            <i class="zmdi zmdi-check m-r-5"></i> Tout Confirmer
+                        </button>
+                        <button class="flex-c-m stext-101 cl2 size-107 bg8 bor13 hov-btn3 p-lr-15 trans-04" onclick="cancelAllPendingProducts()">
+                            <i class="zmdi zmdi-close m-r-5"></i> Tout Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des articles -->
+            {% if cart is defined and cart.cartItems|length > 0 %}
+                <ul class="sidebar-cart-list w-full">
+                    {% for item in cart.cartItems %}
+                    <li class="flex-w flex-t m-b-20 p-b-20 bor12">
+                        <div class="size-w-15 m-r-15">
+                            <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.modeleName ?: 'Produit' }}" class="w-full" style="height: 60px; object-fit: cover;">
+                        </div>
+                        
+                        <div class="size-w-16">
+                            <a href="#" class="stext-104 cl2 hov-cl1 trans-04 p-b-8">
+                                {{ item.product.text|length > 30 ? item.product.text|slice(0, 30) ~ '...' : item.product.text }}
+                            </a>
+                            
+                            <p class="stext-102 cl6 p-t-5">
+                                {{ item.product.largeur }}×{{ item.product.hauteur }}cm - {{ item.product.typeEcriture }}
+                            </p>
+                            
+                            {% if item.product.modeleName %}
+                            <p class="stext-102 cl5 p-t-3">
+                                <strong>Type: {{ item.product.modeleName }}</strong>
+                            </p>
+                            {% endif %}
+                            
+                            <div class="flex-w flex-sb-m p-t-8">
+                                <span class="stext-105 cl3">
+                                    {{ item.quantity }} × {{ item.price|number_format(2) }}€
+                                </span>
+                                
+                                <button class="stext-102 cl6 hov-cl1 trans-04" onclick="removeFromCartSidebar({{ item.id }})">
+                                    <i class="zmdi zmdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Total et boutons -->
+                <div class="w-full p-t-20">
+                    <div class="flex-w flex-sb-m p-b-20 bor12">
+                        <span class="mtext-101 cl2">Total:</span>
+                        <span class="mtext-110 cl2" id="sidebar-cart-total">{{ cart.total|number_format(2) }}€</span>
+                    </div>
+
+                    <div class="p-t-20">
+                        <a href="{{ path('app_cart') }}" class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-b-10">
+                            <i class="zmdi zmdi-shopping-cart m-r-5"></i> Voir le panier
+                        </a>
+                        
+                        <button class="flex-c-m stext-101 cl2 size-107 bg8 bor13 hov-btn3 p-lr-15 trans-04" onclick="clearCartSidebar()">
+                            <i class="zmdi zmdi-delete m-r-5"></i> Vider le panier
+                        </button>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- Panier vide -->
+                <div class="w-full txt-center p-t-30 p-b-30">
+                    <i class="zmdi zmdi-shopping-cart" style="font-size: 60px; color: #ccc;"></i>
+                    <p class="stext-107 cl6 p-t-20">Votre panier est vide</p>
+                    <a href="{{ path('app_home') }}" class="stext-101 cl1 hov-cl1 trans-04 p-t-15">
+                        Continuer les achats
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</aside>
+
+<script>
+// Afficher tous les produits en attente dans le sidebar
+function showPendingProductsInSidebar() {
+    const container = document.getElementById('pending-products-container');
+    const listContainer = document.getElementById('pending-products-list');
+    const countSpan = document.getElementById('pending-count');
+    
+    if (!container || !listContainer) return;
+    
+    // Récupérer la liste des produits en attente
+    const pendingProducts = JSON.parse(sessionStorage.getItem('pendingProducts') || '[]');
+    
+    if (pendingProducts.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Mettre à jour le compteur
+    countSpan.textContent = pendingProducts.length;
+    
+    // Vider la liste
+    listContainer.innerHTML = '';
+    
+    // Afficher chaque produit
+    pendingProducts.forEach((productData, index) => {
+        const productHtml = `
+            <div class="flex-w flex-t p-b-15 m-b-15 bor12" data-pending-index="${index}">
+                <div class="size-w-15 m-r-15">
+                    <img src="${productData.imageUrl || '/images/product-detail-01.jpg'}" alt="${productData.modeleName || 'Produit'}" class="w-full" style="height: 60px; object-fit: cover;">
+                </div>
+                
+                <div class="size-w-16">
+                    <p class="stext-104 cl2 p-b-8">${productData.text}</p>
+                    <p class="stext-102 cl6 p-t-5">${productData.largeur}cm × ${productData.hauteur}cm</p>
+                    <p class="stext-102 cl6">Police: ${productData.typeEcriture}</p>
+                    <p class="stext-102 cl5 p-t-5"><strong>Type: ${productData.modeleName || 'Produit personnalisé'}</strong></p>
+                    <div class="flex-w flex-sb-m p-t-8">
+                        <span class="stext-105 cl3">${productData.quantity} × ${productData.price.toFixed(2)}€</span>
+                        <button class="stext-102 cl6 hov-cl1 trans-04" onclick="removePendingProduct(${index})">
+                            <i class="zmdi zmdi-close"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        listContainer.innerHTML += productHtml;
+    });
+    
+    container.style.display = 'block';
+}
+
+// Confirmer tous les produits en attente
+function confirmAllPendingProducts() {
+    const pendingProducts = JSON.parse(sessionStorage.getItem('pendingProducts') || '[]');
+    
+    console.log('Produits en attente à confirmer:', pendingProducts);
+    
+    if (pendingProducts.length === 0) {
+        if (typeof swal !== 'undefined') {
+            swal("Information", "Aucun produit en attente de confirmation", "info");
+        } else {
+            alert('Aucun produit en attente de confirmation');
+        }
+        return;
+    }
+
+    // Désactiver le bouton pendant le traitement
+    const confirmBtn = document.querySelector('button[onclick="confirmAllPendingProducts()"]');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="zmdi zmdi-refresh zmdi-hc-spin m-r-5"></i> Traitement...';
+    }
+    
+    let promises = [];
+    
+    pendingProducts.forEach((productData, index) => {
+        console.log(`Traitement produit ${index + 1}:`, productData);
+        
+        // Si le produit existe déjà
+        if (productData.productId) {
+            console.log(`Produit ${index + 1} existe déjà, ajout au panier...`);
+            const promise = fetch(`/cart/add/${productData.productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `quantity=${productData.quantity}&price=${productData.price}`
+            })
+            .then(response => {
+                console.log(`Réponse ajout produit ${index + 1}:`, response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log(`Données ajout produit ${index + 1}:`, data);
+                return data;
+            });
+            promises.push(promise);
+        } else {
+            // Créer le produit d'abord
+            console.log(`Création du produit ${index + 1}...`);
+            const formData = new FormData();
+            formData.append('text', productData.text);
+            formData.append('largeur', productData.largeur);
+            formData.append('hauteur', productData.hauteur);
+            formData.append('typeEcriture', productData.typeEcriture);
+            formData.append('imageUrl', productData.imageUrl || '');
+            formData.append('modeleName', productData.modeleName || '');
+            
+            const promise = fetch('/product/create-and-add-to-cart', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log(`Réponse création produit ${index + 1}:`, response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log(`Données création produit ${index + 1}:`, data);
+                if (data.success && data.productId) {
+                    console.log(`Ajout au panier du produit ${index + 1} (ID: ${data.productId})...`);
+                    return fetch(`/cart/add/${data.productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `quantity=${productData.quantity}&price=${productData.price}`
+                    })
+                    .then(response => {
+                        console.log(`Réponse ajout au panier produit ${index + 1}:`, response.status, response.ok);
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                console.error(`Erreur serveur pour produit ${index + 1}:`, text);
+                                throw new Error(`Erreur ${response.status}: ${text}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(cartData => {
+                        console.log(`Données ajout au panier produit ${index + 1}:`, cartData);
+                        if (!cartData.success) {
+                            throw new Error(`Échec ajout au panier: ${cartData.message || 'Erreur inconnue'}`);
+                        }
+                        return cartData;
+                    });
+                } else {
+                    console.error(`Échec création produit ${index + 1}:`, data);
+                    throw new Error(`Échec création produit ${index + 1}`);
+                }
+            });
+            promises.push(promise);
+        }
+    });
+    
+    Promise.all(promises)
+        .then((results) => {
+            console.log('Tous les produits ajoutés:', results);
+            
+            // Vérifier que tous les ajouts ont réussi
+            const allSuccess = results.every(r => r && r.success);
+            
+            if (!allSuccess) {
+                console.error('Certains produits n\'ont pas été ajoutés:', results);
+                throw new Error('Certains produits n\'ont pas pu être ajoutés au panier');
+            }
+            
+            sessionStorage.removeItem('pendingProducts');
+            
+            // Réactiver le bouton
+            const confirmBtn = document.querySelector('button[onclick="confirmAllPendingProducts()"]');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="zmdi zmdi-check m-r-5"></i> Tout Confirmer';
+            }
+            
+            if (typeof swal !== 'undefined') {
+                swal({
+                    title: "Succès!",
+                    text: `${pendingProducts.length} produit(s) ajouté(s) au panier avec succès!`,
+                    icon: "success",
+                    button: "OK"
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                alert(`${pendingProducts.length} produit(s) ajouté(s) au panier!`);
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur complète:', error);
+            
+            // Réactiver le bouton en cas d'erreur
+            const confirmBtn = document.querySelector('button[onclick="confirmAllPendingProducts()"]');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="zmdi zmdi-check m-r-5"></i> Tout Confirmer';
+            }
+            
+            if (typeof swal !== 'undefined') {
+                swal({
+                    title: "Erreur",
+                    text: "Erreur lors de l'ajout au panier: " + error.message,
+                    icon: "error",
+                    button: "OK"
+                });
+            } else {
+                alert('Erreur lors de l\'ajout au panier: ' + error.message + '\nVérifiez la console (F12) pour plus de détails.');
+            }
+        });
+}
+
+// Supprimer un produit en attente spécifique
+function removePendingProduct(index) {
+    let pendingProducts = JSON.parse(sessionStorage.getItem('pendingProducts') || '[]');
+    pendingProducts.splice(index, 1);
+    sessionStorage.setItem('pendingProducts', JSON.stringify(pendingProducts));
+    
+    showPendingProductsInSidebar();
+    
+    if (typeof updateCartBadge === 'function') {
+        updateCartBadge();
+    }
+}
+
+// Annuler tous les produits en attente
+function cancelAllPendingProducts() {
+    if (typeof swal !== 'undefined') {
+        swal({
+            title: "Êtes-vous sûr?",
+            text: "Tous les produits en attente seront supprimés",
+            icon: "warning",
+            buttons: ["Annuler", "Oui, supprimer"],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                sessionStorage.removeItem('pendingProducts');
+                showPendingProductsInSidebar();
+                updateCartBadge();
+                swal("Supprimé!", "Tous les produits en attente ont été supprimés", "success");
+            }
+        });
+    } else {
+        if (confirm('Êtes-vous sûr de vouloir supprimer tous les produits en attente?')) {
+            sessionStorage.removeItem('pendingProducts');
+            showPendingProductsInSidebar();
+            updateCartBadge();
+            alert('Tous les produits en attente ont été supprimés');
+        }
+    }
+}
+
+// Annuler tous les produits en attente
+function cancelAllPendingProducts() {
+    if (confirm('Voulez-vous vraiment annuler tous les produits en attente?')) {
+        sessionStorage.removeItem('pendingProducts');
+        document.getElementById('pending-products-container').style.display = 'none';
+        
+        if (typeof updateCartBadge === 'function') {
+            updateCartBadge();
+        }
+        
+        if (typeof swal !== 'undefined') {
+            swal("Annulé", "Tous les produits en attente ont été supprimés", "info");
+        }
+    }
+}
+
+// Vérifier s'il y a des produits en attente au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    showPendingProductsInSidebar();
+    
+    // Mettre à jour le compteur au chargement
+    if (typeof updateCartBadge === 'function') {
+        updateCartBadge();
+    }
+    
+    // Vérifier aussi quand le sidebar s'ouvre
+    const sidebarTriggers = document.querySelectorAll('.js-show-sidebar');
+    sidebarTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            setTimeout(() => {
+                showPendingProductsInSidebar();
+            }, 100);
+        });
+    });
+});
+
+function removeFromCartSidebar(itemId) {
+    if (confirm('Supprimer cet article du panier ?')) {
+        fetch(`/cart/remove/${itemId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function clearCartSidebar() {
+    if (confirm('Vider tout le panier ?')) {
+        fetch('/cart/clear', {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+
+

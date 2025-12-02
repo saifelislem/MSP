@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}About{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/linearicons-v1.0.0/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/css-hamburgers/hamburgers.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-theme.css') }}">
+    <style>
+        body { padding-top: 80px; }
+        .header-v4 { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="animsition">
+    <header class="header-v4" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: white;">
+        <div class="container-menu-desktop">
+            <div class="wrap-menu-desktop how-shadow1">
+                <nav class="limiter-menu-desktop container">
+                    <a href="{{ path('app_home') }}" class="logo" style="text-decoration: none;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="color: #2F4E9B; font-size: 32px; font-weight: bold; letter-spacing: -2px;">MS</span>
+                            <span style="color: #8A92AD; font-size: 20px; font-weight: 500;">Lettres</span>
+                        </div>
+                    </a>
+                    <div class="menu-desktop">
+                        <ul class="main-menu">
+                            <li class="active-menu">
+                                <a href="{{ path('app_home') }}" style="color: #222;">Accueil</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('app_cart') }}" style="color: #222;">Mon Panier</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="wrap-icon-header flex-w flex-r-m">
+                        <div class="icon-header-item cl0 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-sidebar" data-notify="{{ cartItemsCount|default(0) }}" style="color: #222;">
+                            <i class="zmdi zmdi-shopping-cart" style="font-size: 24px;"></i>
+                        </div>
+                        <a href="{{ path('app_login') }}" class="icon-header-item cl0 hov-cl1 trans-04 p-l-22 p-r-11" title="Admin" style="color: #222;">
+                            <i class="zmdi zmdi-account-circle" style="font-size: 24px;"></i>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+</body>
+</html>

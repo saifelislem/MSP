@@ -1,0 +1,98 @@
+/* Styles pour le sidebar du panier */
+.sidebar-cart-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Zone de produit en attente */
+.bg-warning {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+#pending-product-container {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Boutons de confirmation */
+#pending-product-container button {
+    min-width: 120px;
+    font-weight: 600;
+}
+
+#pending-product-container .bg3 {
+    background-color: #28a745 !important;
+}
+
+#pending-product-container .bg3:hover {
+    background-color: #218838 !important;
+}
+
+/* Séparateur visuel */
+.bor10 {
+    border: 1px solid #e6e6e6;
+}
+
+/* Padding helper */
+.p-all-15 {
+    padding: 15px;
+}
+
+.sidebar-cart-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-cart-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.sidebar-cart-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.sidebar-cart-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.size-w-15 {
+    width: 80px;
+    min-width: 80px;
+}
+
+.size-w-16 {
+    width: calc(100% - 95px);
+}
+
+.sidebar .bor12 {
+    border-bottom: 1px solid #e6e6e6;
+}
+
+/* Animation pour l'ouverture du sidebar */
+.wrap-sidebar {
+    transition: all 0.3s ease;
+}
+
+/* Style pour les boutons du sidebar */
+.sidebar button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sidebar button:hover {
+    opacity: 0.8;
+}

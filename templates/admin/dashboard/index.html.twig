@@ -1,0 +1,138 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📊 Tableau de bord</h1>
+    <div>
+        <span class="badge bg-info me-2" id="dashboard-update">Mise à jour: maintenant</span>
+        <span class="text-muted">Bienvenue, {{ app.user.name }}</span>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Total Commandes</h6>
+                <h2>{{ stats.total_orders }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card warning">
+            <div class="card-body">
+                <h6 class="text-muted">En attente</h6>
+                <h2>{{ stats.pending_orders }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card success">
+            <div class="card-body">
+                <h6 class="text-muted">Terminées</h6>
+                <h2>{{ stats.completed_orders }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Revenu Total</h6>
+                <h2>{{ stats.total_revenue|number_format(2) }}€</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Modèles Actifs</h6>
+                <h2>{{ stats.active_modeles }} / {{ stats.total_modeles }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Produits Créés</h6>
+                <h2>{{ stats.total_products }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Commandes récentes -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">📦 Commandes récentes</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_orders|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td><strong>{{ order.orderNumber }}</strong></td>
+                            <td>{{ order.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ order.customerName ?? 'N/A' }}</td>
+                            <td>{{ order.total|number_format(2) }}€</td>
+                            <td>
+                                <span class="badge bg-{{ order.status == 'completed' ? 'success' : (order.status == 'pending' ? 'warning' : 'info') }}">
+                                    {{ order.statusLabel }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_orders_show', {id: order.id}) }}" class="btn btn-sm btn-primary">Voir</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">Aucune commande pour le moment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Auto-refresh du dashboard toutes les 60 secondes
+setInterval(() => {
+    console.log('Auto-refresh du dashboard...');
+    location.reload();
+}, 60000); // 60 secondes
+
+// Mettre à jour le badge de temps
+let startTime = new Date();
+setInterval(() => {
+    const now = new Date();
+    const diff = Math.floor((now - startTime) / 1000);
+    const badge = document.getElementById('dashboard-update');
+    if (badge) {
+        if (diff < 60) {
+            badge.textContent = `Mise à jour: il y a ${diff}s`;
+        } else {
+            badge.textContent = `Mise à jour: il y a ${Math.floor(diff / 60)}min`;
+        }
+    }
+}, 1000);
+</script>
+{% endblock %}

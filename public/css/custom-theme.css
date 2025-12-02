@@ -1,0 +1,259 @@
+/* ===================================
+   THÈME PERSONNALISÉ MS LETTRES
+   Palette: Lavande, Gris bleuté, Bleu vif, Bleu marine
+   =================================== */
+
+/* Variables de couleurs */
+:root {
+    --light-lavender: #DADDEB;
+    --medium-blue-gray: #8A92AD;
+    --vivid-blue: #2F4E9B;
+    --deep-navy: #0F1A3A;
+    --dark-navy: #0A1A40;
+    --white: #FFFFFF;
+    --black: #000000;
+}
+
+/* Boutons principaux */
+.bg3, .hov-btn1:hover, .hov-btn2:hover, .hov-btn3:hover {
+    background: var(--vivid-blue) !important;
+}
+
+.bg1 {
+    background: var(--deep-navy) !important;
+}
+
+.bg8 {
+    background: var(--light-lavender) !important;
+}
+
+/* Textes */
+.cl0, .cl1 {
+    color: var(--white) !important;
+}
+
+.cl2 {
+    color: var(--deep-navy) !important;
+}
+
+.cl3, .cl4, .cl5 {
+    color: var(--dark-navy) !important;
+}
+
+.cl6 {
+    color: var(--medium-blue-gray) !important;
+}
+
+.cl7, .cl8 {
+    color: var(--light-lavender) !important;
+}
+
+/* Liens hover */
+.hov-cl1:hover {
+    color: var(--vivid-blue) !important;
+}
+
+/* Bordures */
+.bor1, .bor2, .bor3 {
+    border-color: var(--light-lavender) !important;
+}
+
+/* Footer */
+.bg3 {
+    background: var(--deep-navy) !important;
+}
+
+footer .bg3 {
+    background: var(--deep-navy) !important;
+}
+
+/* Boutons personnalisés */
+.block2-btn {
+    background: var(--vivid-blue) !important;
+    border: none !important;
+}
+
+.block2-btn:hover {
+    background: var(--deep-navy) !important;
+}
+
+/* Cards produits */
+.block2 {
+    background: var(--white) !important;
+    border: 1px solid var(--light-lavender) !important;
+}
+
+/* Header */
+.header-v3, .header-v4 {
+    background: var(--white) !important;
+    border-bottom: 1px solid var(--light-lavender) !important;
+}
+
+/* Menu */
+.main-menu > li > a {
+    color: var(--deep-navy) !important;
+}
+
+.main-menu > li > a:hover {
+    color: var(--vivid-blue) !important;
+}
+
+/* Icônes */
+.icon-header-item {
+    color: var(--deep-navy) !important;
+}
+
+.icon-header-item:hover {
+    color: var(--vivid-blue) !important;
+}
+
+/* Panier sidebar */
+.js-panel-cart {
+    background: var(--white) !important;
+}
+
+/* Tableau panier */
+.table-shopping-cart {
+    border-color: var(--light-lavender) !important;
+}
+
+.table_head {
+    background: var(--light-lavender) !important;
+}
+
+.table_row {
+    border-bottom: 1px solid var(--light-lavender) !important;
+}
+
+/* Résumé commande */
+.bor10 {
+    border: 1px solid var(--light-lavender) !important;
+    background: var(--white) !important;
+}
+
+.bor12 {
+    border-bottom: 1px solid var(--light-lavender) !important;
+}
+
+/* Boutons quantité */
+.btn-num-product-down,
+.btn-num-product-up {
+    background: var(--light-lavender) !important;
+    color: var(--deep-navy) !important;
+}
+
+.btn-num-product-down:hover,
+.btn-num-product-up:hover {
+    background: var(--vivid-blue) !important;
+    color: var(--white) !important;
+}
+
+/* Bouton paiement */
+a[href*="payment"] {
+    background: var(--vivid-blue) !important;
+    border: none !important;
+}
+
+a[href*="payment"]:hover {
+    background: var(--deep-navy) !important;
+}
+
+/* Breadcrumb */
+.bread-crumb a {
+    color: var(--medium-blue-gray) !important;
+}
+
+.bread-crumb a:hover {
+    color: var(--vivid-blue) !important;
+}
+
+/* Modal */
+.wrap-modal1 .bg0 {
+    background: var(--white) !important;
+    border: 1px solid var(--light-lavender) !important;
+}
+
+/* Inputs */
+input, textarea, select {
+    border-color: var(--light-lavender) !important;
+    color: var(--deep-navy) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--vivid-blue) !important;
+}
+
+/* Badges notification */
+.icon-header-noti[data-notify]:before {
+    background: var(--vivid-blue) !important;
+}
+
+/* Sections */
+.bg0 {
+    background: var(--white) !important;
+}
+
+/* Titres */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--deep-navy) !important;
+}
+
+/* Prix */
+.mtext-110, .stext-105 {
+    color: var(--vivid-blue) !important;
+    font-weight: 600 !important;
+}
+
+/* Bouton retour en haut */
+.btn-back-to-top {
+    background: var(--vivid-blue) !important;
+}
+
+.btn-back-to-top:hover {
+    background: var(--deep-navy) !important;
+}
+
+/* Overlay */
+.overlay-modal1 {
+    background: rgba(15, 26, 58, 0.8) !important;
+}
+
+/* Animations hover sur cards */
+.block2:hover {
+    box-shadow: 0 8px 25px rgba(47, 78, 155, 0.3) !important;
+}
+
+/* Liens généraux */
+a {
+    color: var(--vivid-blue) !important;
+}
+
+a:hover {
+    color: var(--deep-navy) !important;
+}
+
+/* Boutons secondaires */
+.size-119 {
+    background: var(--light-lavender) !important;
+    color: var(--deep-navy) !important;
+    border: 1px solid var(--light-lavender) !important;
+}
+
+.size-119:hover {
+    background: var(--medium-blue-gray) !important;
+    color: var(--white) !important;
+}
+
+/* Admin panel */
+.admin-sidebar {
+    background: var(--deep-navy) !important;
+}
+
+.admin-sidebar a {
+    color: var(--light-lavender) !important;
+}
+
+.admin-sidebar a:hover {
+    color: var(--vivid-blue) !important;
+    background: rgba(47, 78, 155, 0.2) !important;
+}

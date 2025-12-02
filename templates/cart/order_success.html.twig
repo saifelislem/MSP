@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Commande confirmée</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+    <style>
+        .success-icon {
+            font-size: 80px;
+            color: #28a745;
+            animation: scaleIn 0.5s ease-in-out;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'includes/header.html.twig' %}
+
+    <section class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="bor10 p-lr-40 p-t-50 p-b-50 text-center">
+                        <i class="zmdi zmdi-check-circle success-icon"></i>
+                        
+                        <h2 class="ltext-109 cl2 p-t-30 p-b-20">
+                            Commande confirmée!
+                        </h2>
+                        
+                        <p class="stext-111 cl6 p-b-10">
+                            Merci pour votre commande. Votre numéro de commande est:
+                        </p>
+                        
+                        <h3 class="mtext-110 cl2 p-b-30">
+                            {{ order.orderNumber }}
+                        </h3>
+                        
+                        <div class="bor8 p-all-20 m-b-30 text-left">
+                            <h5 class="mtext-107 cl2 p-b-15">Détails de la commande</h5>
+                            
+                            <div class="flex-w flex-sb-m p-b-10">
+                                <span class="stext-102 cl6">Date:</span>
+                                <span class="stext-102 cl2">{{ order.createdAt|date('d/m/Y à H:i') }}</span>
+                            </div>
+                            
+                            <div class="flex-w flex-sb-m p-b-10">
+                                <span class="stext-102 cl6">Total:</span>
+                                <span class="mtext-110 cl2">{{ order.total|number_format(2) }}€</span>
+                            </div>
+                            
+                            <div class="flex-w flex-sb-m p-b-10">
+                                <span class="stext-102 cl6">Statut:</span>
+                                <span class="badge bg-warning">{{ order.statusLabel }}</span>
+                            </div>
+                            
+                            {% if order.customerEmail %}
+                            <div class="p-t-15">
+                                <p class="stext-102 cl6">
+                                    <i class="zmdi zmdi-email m-r-5"></i>
+                                    Un email de confirmation a été envoyé à: <strong>{{ order.customerEmail }}</strong>
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-w flex-c-m">
+                            <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-r-10">
+                                <i class="zmdi zmdi-home m-r-5"></i> Retour à l'accueil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'includes/footer.html.twig' %}
+
+</body>
+</html>

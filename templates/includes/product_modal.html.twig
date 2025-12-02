@@ -1,0 +1,269 @@
+<!-- Modal Quick View Product -->
+<div class="wrap-modal1 js-modal1 p-t-60 p-b-20">
+    <div class="overlay-modal1 js-hide-modal1" onclick="closeModal()"></div>
+
+    <div class="container">
+        <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent">
+            <button class="how-pos3 hov3 trans-04 js-hide-modal1" onclick="closeModal()">
+                <img src="{{ asset('images/icons/icon-close.png') }}" alt="CLOSE">
+            </button>
+
+            <div class="row" id="modal-product-content">
+                <div class="col-md-5 col-lg-4 p-b-30">
+                    <div class="p-l-25 p-r-30 p-lr-0-lg">
+                        <div class="wrap-slick3 flex-sb flex-w">
+                            <div class="slick3 gallery-lb">
+                                <div class="item-slick3" data-thumb="{{ asset('images/product-detail-01.jpg') }}">
+                                    <div class="wrap-pic-w pos-relative" style="max-height: 300px; overflow: hidden;">
+                                        <img src="{{ asset('images/product-detail-01.jpg') }}" alt="IMG-PRODUCT" style="width: 100%; height: auto; max-height: 300px; object-fit: contain;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-7 col-lg-8 p-b-30">
+                    <div class="p-r-50 p-t-5 p-lr-0-lg">
+                        <h4 class="mtext-105 cl2 js-name-detail p-b-14" id="modal-product-title">
+                            Personnalisez votre produit
+                        </h4>
+
+                        <span class="mtext-106 cl2" id="modal-product-price">
+                            10.00€
+                        </span>
+
+                        <p class="stext-102 cl3 p-t-23" id="modal-product-description">
+                            <strong>Remplissez tous les champs</strong> pour créer votre produit personnalisé.
+                        </p>
+
+                        <!--  -->
+                        <div class="p-t-33">
+                            <!-- Texte -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Texte
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="rs1-select2 bor8 bg0">
+                                        <input type="text" id="modal-product-text" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Entrez votre texte ici..." maxlength="100" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Largeur -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Largeur (cm)
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="rs1-select2 bor8 bg0">
+                                        <input type="number" id="modal-product-largeur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 10" min="1" max="200" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hauteur -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Hauteur (cm)
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="rs1-select2 bor8 bg0">
+                                        <input type="number" id="modal-product-hauteur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 10" min="1" max="200" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Type d'écriture -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Police
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="rs1-select2 bor8 bg0">
+                                        <select class="js-select2" id="modal-product-typeEcriture">
+                                            <option value="Arial">Arial</option>
+                                            <option value="Times New Roman">Times New Roman</option>
+                                            <option value="Courier New">Courier New</option>
+                                            <option value="Georgia">Georgia</option>
+                                            <option value="Verdana">Verdana</option>
+                                            <option value="Comic Sans MS">Comic Sans MS</option>
+                                            <option value="Impact">Impact</option>
+                                            <option value="Trebuchet MS">Trebuchet MS</option>
+                                        </select>
+                                        <div class="dropDownSelect2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quantité -->
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Quantité
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="wrap-num-product flex-w m-r-20 m-tb-10">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                            <i class="fs-16 zmdi zmdi-minus"></i>
+                                        </div>
+
+                                        <input class="mtext-104 cl3 txt-center num-product" type="number" id="modal-product-quantity" value="1" min="1">
+
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                            <i class="fs-16 zmdi zmdi-plus"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--  -->
+                            <div class="flex-w flex-r-m p-t-10">
+                                <button class="flex-c-m stext-101 cl0 size-101 bg3 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail" onclick="addToCartFromModal()">
+                                    <i class="zmdi zmdi-shopping-cart m-r-8"></i>
+                                    Ajouter au panier
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="flex-w flex-m p-t-30 p-b-30 bor10 p-lr-15 m-t-30">
+                            <div class="w-full">
+                                <h5 class="mtext-107 cl2 p-b-10">Aperçu</h5>
+                                <div id="product-preview" class="bg6 p-all-15 txt-center" style="min-height: 150px; border: 2px dashed #e6e6e6; border-radius: 5px;">
+                                    <p class="stext-102 cl6" id="preview-text">Votre texte apparaîtra ici</p>
+                                    <p class="stext-102 cl6 p-t-10" id="preview-dimensions">Dimensions: 10cm × 10cm</p>
+                                    <p class="stext-102 cl6" id="preview-font">Police: Arial</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fonction pour fermer le modal
+function closeModal() {
+    const modal = document.querySelector('.js-modal1');
+    if (modal) {
+        modal.classList.remove('show-modal1');
+        // Supprimer aussi le produit en attente si on ferme sans ajouter
+        // sessionStorage.removeItem('pendingProduct'); // Décommentez si vous voulez supprimer
+    }
+}
+
+// Mise à jour de l'aperçu en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const textInput = document.getElementById('modal-product-text');
+    const largeurInput = document.getElementById('modal-product-largeur');
+    const hauteurInput = document.getElementById('modal-product-hauteur');
+    const typeEcritureSelect = document.getElementById('modal-product-typeEcriture');
+    
+    function updatePreview() {
+        const text = textInput.value || 'Votre texte apparaîtra ici';
+        const largeur = largeurInput.value || '10';
+        const hauteur = hauteurInput.value || '10';
+        const font = typeEcritureSelect.value || 'Arial';
+        
+        document.getElementById('preview-text').textContent = text;
+        document.getElementById('preview-text').style.fontFamily = font;
+        document.getElementById('preview-dimensions').textContent = `Dimensions: ${largeur}cm × ${hauteur}cm`;
+        document.getElementById('preview-font').textContent = `Police: ${font}`;
+    }
+    
+    if (textInput) textInput.addEventListener('input', updatePreview);
+    if (largeurInput) largeurInput.addEventListener('input', updatePreview);
+    if (hauteurInput) hauteurInput.addEventListener('input', updatePreview);
+    if (typeEcritureSelect) typeEcritureSelect.addEventListener('change', updatePreview);
+});
+
+// Fonction pour ajouter au panier depuis le modal (avec confirmation)
+function addToCartFromModal() {
+    const textInput = document.getElementById('modal-product-text');
+    const text = textInput.value;
+    const largeur = document.getElementById('modal-product-largeur').value;
+    const hauteur = document.getElementById('modal-product-hauteur').value;
+    const typeEcriture = document.getElementById('modal-product-typeEcriture').value;
+    const quantity = document.getElementById('modal-product-quantity').value;
+    
+    // Validation des champs
+    if (!text || text.trim() === '') {
+        alert('⚠️ Veuillez entrer un texte pour votre produit');
+        return;
+    }
+    
+    if (!largeur || largeur < 1) {
+        alert('⚠️ Veuillez entrer une largeur valide (minimum 1 cm)');
+        return;
+    }
+    
+    if (!hauteur || hauteur < 1) {
+        alert('⚠️ Veuillez entrer une hauteur valide (minimum 1 cm)');
+        return;
+    }
+    
+    // Vérifier si c'est un produit existant (a un data-product-id)
+    const existingProductId = textInput.getAttribute('data-product-id');
+    
+    // Récupérer l'image et le nom du modèle
+    const imageUrl = textInput.getAttribute('data-image-url') || '/images/product-detail-01.jpg';
+    const modeleName = textInput.getAttribute('data-model-name') || 'Produit personnalisé';
+    
+    // Stocker les données du produit temporairement
+    const productData = {
+        text: text,
+        largeur: largeur,
+        hauteur: hauteur,
+        typeEcriture: typeEcriture,
+        quantity: quantity,
+        price: 10.00,
+        imageUrl: imageUrl,
+        modeleName: modeleName
+    };
+    
+    // Si c'est un produit existant, ajouter l'ID
+    if (existingProductId) {
+        productData.productId = existingProductId;
+    }
+    
+    // Récupérer la liste des produits en attente
+    let pendingProducts = JSON.parse(sessionStorage.getItem('pendingProducts') || '[]');
+    
+    // Ajouter le nouveau produit à la liste
+    pendingProducts.push(productData);
+    
+    // Sauvegarder la liste mise à jour
+    sessionStorage.setItem('pendingProducts', JSON.stringify(pendingProducts));
+    
+    // Fermer le modal
+    document.querySelector('.js-hide-modal1').click();
+    
+    // Réinitialiser le data-product-id pour les prochaines créations
+    textInput.removeAttribute('data-product-id');
+    
+    // Mettre à jour le compteur du panier (ajouter 1 pour le produit en attente)
+    updateCartBadge();
+    
+    // Afficher une notification pour informer l'utilisateur
+    if (typeof swal !== 'undefined') {
+        swal({
+            title: "Produit ajouté!",
+            text: "Cliquez sur l'icône du panier pour confirmer l'ajout",
+            icon: "success",
+            button: "OK"
+        });
+    } else {
+        alert('Produit ajouté! Cliquez sur l\'icône du panier pour confirmer l\'ajout');
+    }
+}
+
+
+</script>

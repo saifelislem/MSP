@@ -1,0 +1,51 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouveau modèle{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>➕ Nouveau Modèle de Lettre</h1>
+    <a href="{{ path('admin_modeles_index') }}" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom du modèle *</label>
+                <input type="text" class="form-control" id="nom" name="nom" required placeholder="Ex: Lettres 3D Acier Inoxydable">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Description du modèle..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Chemin de l'image *</label>
+                <input type="text" class="form-control" id="image" name="image" required placeholder="lettres/modele-1.jpg">
+                <small class="text-muted">Placez l'image dans le dossier public/lettres/</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="prixBase" class="form-label">Prix de base (€) *</label>
+                <input type="number" step="0.01" class="form-control" id="prixBase" name="prixBase" required placeholder="10.00">
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="actif" name="actif" value="1" checked>
+                <label class="form-check-label" for="actif">
+                    Actif (visible sur le site)
+                </label>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-save"></i> Créer le modèle
+                </button>
+                <a href="{{ path('admin_modeles_index') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

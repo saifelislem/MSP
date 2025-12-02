@@ -1,0 +1,70 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modèles de lettres{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>🔤 Gestion des Modèles de Lettres</h1>
+    <a href="{{ path('admin_modeles_new') }}" class="btn btn-success">
+        <i class="fa fa-plus"></i> Nouveau modèle
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if modeles|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Prix de base</th>
+                            <th>Statut</th>
+                            <th>Date création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for modele in modeles %}
+                        <tr>
+                            <td>
+                                <img src="{{ asset(modele.image) }}" alt="{{ modele.nom }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                            </td>
+                            <td><strong>{{ modele.nom }}</strong></td>
+                            <td>{{ modele.description|length > 50 ? modele.description|slice(0, 50) ~ '...' : modele.description }}</td>
+                            <td>{{ modele.prixBase|number_format(2) }}€</td>
+                            <td>
+                                <form method="post" action="{{ path('admin_modeles_toggle', {id: modele.id}) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-{{ modele.actif ? 'success' : 'secondary' }}">
+                                        {{ modele.actif ? '✓ Actif' : '✗ Inactif' }}
+                                    </button>
+                                </form>
+                            </td>
+                            <td>{{ modele.createdAt|date('d/m/Y') }}</td>
+                            <td>
+                                <a href="{{ path('admin_modeles_edit', {id: modele.id}) }}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <form method="post" action="{{ path('admin_modeles_delete', {id: modele.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce modèle ?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa fa-cube fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucun modèle créé.</p>
+                <a href="{{ path('admin_modeles_new') }}" class="btn btn-success">Créer le premier modèle</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
