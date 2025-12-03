@@ -48,87 +48,83 @@
             </h2>
             <div class="row">
                 <div class="col-lg-8 col-xl-8 m-b-50">
-            
-                        {% if cart.cartItems|length > 0 %}
-                            <div class="wrap-table-shopping-cart">
-                                <table class="table-shopping-cart">
-                                    <thead>
-                                        <tr class="table_head">
-                                            <th class="column-1" style="text-align: center;">Produit</th>
-                                            <th class="column-2" style="text-align: center;">Détails</th>
-                                            <th class="column-3" style="text-align: center;">Prix</th>
-                                            <th class="column-4" style="text-align: center;">Quantité</th>
-                                            <th class="column-5" style="text-align: center;">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for item in cart.cartItems %}
-                                        <tr class="table_row" data-item-id="{{ item.id }}">
-                                            <td class="column-1" style="text-align: center; vertical-align: middle;"></td>
-                                                <div class="how-itemcart1" style="margin: 0 auto;"></div>
-                                                    <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.modeleName ?: 'Produit' }}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
-                                                </div>
-                                            </td>
-                                            <td class="column-2">
-                                                <div class="p-l-15" style="text-align: center;">
-                                                    <h6 class="mtext-105 cl2 p-b-5" style="text-align: center;">{{ item.product.text }}</h6>
-                                                    <p class="stext-102 cl6" style="text-align: center;"></p>
-                                                        {{ item.product.largeur }}cm × {{ item.product.hauteur }}cm<br>
-                                                        Police: {{ item.product.typeEcriture }}
-                                                    </p>
-                                                    {% if item.product.modeleName %}
-                                                    <p class="stext-102 cl5 p-t-5" style="text-align: center;"></p>
-                                                        <strong>Type: {{ item.product.modeleName }}</strong>
-                                                    </p>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                            <td class="column-3" style="text-align: center; vertical-align: middle;">{{ item.price|number_format(2) }}€</td>
-                                            <td class="column-4" style="text-align: center; vertical-align: middle;">
-                                                <div class="wrap-num-product flex-w" style="margin: 0 auto; justify-content: center;"></div>
-                                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity - 1 }})">
-                                                        <i class="fs-16 zmdi zmdi-minus"></i>
-                                                    </div>
-                                                    <input class="mtext-104 cl3 txt-center num-product" type="number" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.id }}, this.value)">
-                                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity + 1 }})">
-                                                        <i class="fs-16 zmdi zmdi-plus"></i>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="column-5" style="text-align: center; vertical-align: middle;">{{ item.subtotal|number_format(2) }}€</td>
-                                            <td class="column-6">
-                                                <button class="how-itemcart1-delete hov-cl1 trans-04" onclick="removeFromCart({{ item.id }})">
-                                                    <i class="zmdi zmdi-close"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="flex-w flex-sb-m p-t-25 p-b-25 bo8 p-lr-15 p-lr-0-sm">
-                                <div class="flex-w flex-m m-r-20 m-tb-5">
-                                    <button class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10" onclick="clearCart()">
-                                        <i class="zmdi zmdi-delete m-r-5"></i> Vider le panier
-                                    </button>
-                                </div>
-
-                                <div class="flex-w flex-m m-tb-5">
-                                    <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-                                        <i class="zmdi zmdi-arrow-left m-r-5"></i> Continuer les achats
-                                    </a>
+                    {% if cart.cartItems|length > 0 %}
+                        <!-- Liste des articles -->
+                        {% for item in cart.cartItems %}
+                        <div class="cart-item-card" style="display: flex; align-items: center; gap: 20px; padding: 20px; margin-bottom: 15px; background: white; border: 1px solid #DADDEB; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            
+                            <!-- Coordonnées du produit (gauche) -->
+                            <div style="flex: 2;">
+                                <h6 class="mtext-105 cl2 p-b-5">{{ item.product.text }}</h6>
+                                <p class="stext-102 cl6">
+                                    Dimensions: {{ item.product.largeur }}cm × {{ item.product.hauteur }}cm<br>
+                                    Police: {{ item.product.typeEcriture }}
+                                </p>
+                                {% if item.product.modeleName %}
+                                <p class="stext-102 cl5 p-t-5">
+                                    <strong>Type: {{ item.product.modeleName }}</strong>
+                                </p>
+                                {% endif %}
+                                
+                                <!-- Quantité -->
+                                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <span class="stext-102 cl6">Quantité:</span>
+                                    <div class="wrap-num-product flex-w" style="display: inline-flex;">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity - 1 }})">
+                                            <i class="fs-16 zmdi zmdi-minus"></i>
+                                        </div>
+                                        <input class="mtext-104 cl3 txt-center num-product" type="number" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.id }}, this.value)" style="width: 50px;">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity + 1 }})">
+                                            <i class="fs-16 zmdi zmdi-plus"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        {% else %}
-                            <div class="txt-center p-t-50 p-b-50">
-                                <i class="zmdi zmdi-shopping-cart" style="font-size: 80px; color: #ccc;"></i>
-                                <h4 class="mtext-109 cl6 p-t-20 p-b-20">Votre panier est vide</h4>
-                                <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-20">
-                                    <i class="zmdi zmdi-shopping-basket m-r-5"></i> Continuer les achats
+                            
+                            <!-- Image du produit (droite) -->
+                            <div style="flex: 1; text-align: center;">
+                                <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.modeleName ?: 'Produit' }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            </div>
+                            
+                            <!-- Prix et actions (fin) -->
+                            <div style="flex: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                <div>
+                                    <p class="stext-102 cl6" style="margin-bottom: 5px;">Prix unitaire</p>
+                                    <p class="mtext-106" style="color: #2F4E9B; font-weight: 600;">{{ item.price|number_format(2) }}€</p>
+                                </div>
+                                <div>
+                                    <p class="stext-102 cl6" style="margin-bottom: 5px;">Total</p>
+                                    <p class="mtext-110" style="color: #2F4E9B; font-weight: 700; font-size: 20px;">{{ item.subtotal|number_format(2) }}€</p>
+                                </div>
+                                <button class="how-itemcart1-delete hov-cl1 trans-04" onclick="removeFromCart({{ item.id }})" style="margin-top: 10px; background: #DADDEB; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer;">
+                                    <i class="zmdi zmdi-delete" style="color: #0F1A3A;"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="flex-w flex-sb-m p-t-25 p-b-25 p-lr-15">
+                            <div class="flex-w flex-m m-r-20 m-tb-5">
+                                <button class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10" onclick="clearCart()">
+                                    <i class="zmdi zmdi-delete m-r-5"></i> Vider le panier
+                                </button>
+                            </div>
+
+                            <div class="flex-w flex-m m-tb-5">
+                                <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+                                    <i class="zmdi zmdi-arrow-left m-r-5"></i> Continuer les achats
                                 </a>
                             </div>
-                        {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="txt-center p-t-50 p-b-50">
+                            <i class="zmdi zmdi-shopping-cart" style="font-size: 80px; color: #ccc;"></i>
+                            <h4 class="mtext-109 cl6 p-t-20 p-b-20">Votre panier est vide</h4>
+                            <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-20">
+                                <i class="zmdi zmdi-shopping-basket m-r-5"></i> Continuer les achats
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <!-- Résumé du panier -->
@@ -166,8 +162,8 @@
                             </div>
                         </div>
 
-                        <a href="{{ path('payment_create_checkout') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; text-decoration: none; display: inline-block;">
-                            <i class="zmdi zmdi-card m-r-5"></i> Payer maintenant
+                        <a href="{{ path('customer_identify') }}" class="stext-101 cl0 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="text-decoration: none; display: flex; width: 100%; justify-content: center; align-items: center; padding: 15px; border-radius: 8px;">
+                            <i class="zmdi zmdi-card" style="margin-right: 8px;"></i> Payer maintenant
                         </a>
                     </div>
                 </div>
@@ -176,45 +172,10 @@
         </div>
     </section>
 
-    {% include 'includes/footer.html.twig' %}
-
-    <!-- Modal Confirmation Rapide -->
-    <div class="wrap-modal1 js-modal-checkout p-t-60 p-b-20" style="display: none;">
-        <div class="overlay-modal1" onclick="closeQuickCheckout()"></div>
-        <div class="container">
-            <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent" style="max-width: 600px; margin: auto;">
-                <button class="how-pos3 hov3 trans-04" onclick="closeQuickCheckout()">
-                    <img src="{{ asset('images/icons/icon-close.png') }}" alt="CLOSE">
-                </button>
-                
-                <h4 class="mtext-105 cl2 p-b-30 txt-center">
-                    <i class="zmdi zmdi-account-circle m-r-10"></i>Finaliser la commande
-                </h4>
-                
-                <form id="quick-checkout-form">
-                    <div class="bor8 m-b-20 how-pos4-parent">
-                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="name" placeholder="Nom complet *" required>
-                    </div>
-                    
-                    <div class="bor8 m-b-20 how-pos4-parent">
-                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="email" name="email" placeholder="Email *" required>
-                    </div>
-                    
-                    <div class="bor8 m-b-20 how-pos4-parent">
-                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="tel" name="phone" placeholder="Téléphone">
-                    </div>
-                    
-                    <div class="bor8 m-b-30">
-                        <textarea class="stext-111 cl2 plh3 size-120 p-lr-20 p-tb-15" name="notes" placeholder="Notes (optionnel)"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer w-full">
-                        <i class="zmdi zmdi-check m-r-5"></i> Confirmer la commande
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer>
+        {% include 'includes/footer.html.twig' %}
+    </footer>
 
     <!-- Back to top -->
     <div class="btn-back-to-top" id="myBtn">
@@ -272,80 +233,6 @@ function clearCart() {
         });
     }
 }
-
-// Ouvrir le modal de confirmation rapide
-function openQuickCheckout() {
-    document.querySelector('.js-modal-checkout').style.display = 'block';
-    setTimeout(() => {
-        document.querySelector('.js-modal-checkout').classList.add('show-modal1');
-    }, 10);
-}
-
-// Fermer le modal
-function closeQuickCheckout() {
-    document.querySelector('.js-modal-checkout').classList.remove('show-modal1');
-    setTimeout(() => {
-        document.querySelector('.js-modal-checkout').style.display = 'none';
-    }, 300);
-}
-
-// Gérer la soumission du formulaire
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('quick-checkout-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="zmdi zmdi-refresh zmdi-hc-spin m-r-5"></i> Création en cours...';
-            
-            const formData = new FormData(this);
-            
-            fetch('/cart/create-order', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (typeof swal !== 'undefined') {
-                        swal({
-                            title: "Commande créée!",
-                            text: "Votre commande N°" + data.orderNumber + " a été créée avec succès!",
-                            icon: "success",
-                            button: "Voir ma commande"
-                        }).then(() => {
-                            window.location.href = '/cart/order-success/' + data.orderId;
-                        });
-                    } else {
-                        alert('Commande créée: ' + data.orderNumber);
-                        window.location.href = '/cart/order-success/' + data.orderId;
-                    }
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                    if (typeof swal !== 'undefined') {
-                        swal("Erreur", data.message, "error");
-                    } else {
-                        alert('Erreur: ' + data.message);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                if (typeof swal !== 'undefined') {
-                    swal("Erreur", "Une erreur est survenue", "error");
-                } else {
-                    alert('Erreur lors de la création de la commande');
-                }
-            });
-        });
-    }
-});
 </script>
 
     <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>

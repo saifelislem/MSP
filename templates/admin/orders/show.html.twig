@@ -80,13 +80,40 @@
     <!-- Informations client -->
     <div class="col-md-4">
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Client</h5>
+            <div class="card-header" style="background: #2F4E9B; color: white;">
+                <h5 class="mb-0"><i class="zmdi zmdi-account-circle"></i> Informations Client</h5>
             </div>
             <div class="card-body">
-                <p><strong>Nom:</strong><br>{{ order.customerName ?? 'Non renseigné' }}</p>
-                <p><strong>Email:</strong><br>{{ order.customerEmail ?? 'Non renseigné' }}</p>
-                <p><strong>Téléphone:</strong><br>{{ order.customerPhone ?? 'Non renseigné' }}</p>
+                {% if order.customer %}
+                    <div class="mb-3">
+                        <strong style="color: #0F1A3A;">Nom complet:</strong><br>
+                        <span style="font-size: 16px;">{{ order.customer.fullName }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <strong style="color: #0F1A3A;">Email:</strong><br>
+                        <a href="mailto:{{ order.customer.email }}" style="color: #2F4E9B;">{{ order.customer.email }}</a>
+                    </div>
+                    <div class="mb-3">
+                        <strong style="color: #0F1A3A;">Téléphone:</strong><br>
+                        <a href="tel:{{ order.customer.telephone }}" style="color: #2F4E9B;">{{ order.customer.telephone }}</a>
+                    </div>
+                    {% if order.customer.adresse %}
+                    <div class="mb-3">
+                        <strong style="color: #0F1A3A;">Adresse:</strong><br>
+                        {{ order.customer.adresse }}<br>
+                        {% if order.customer.codePostal %}{{ order.customer.codePostal }}{% endif %}
+                        {% if order.customer.ville %}{{ order.customer.ville }}{% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="mb-0">
+                        <small class="text-muted">Client depuis le {{ order.customer.createdAt|date('d/m/Y') }}</small><br>
+                        <small class="text-muted">{{ order.customer.orders|length }} commande(s)</small>
+                    </div>
+                {% else %}
+                    <p><strong>Nom:</strong><br>{{ order.customerName ?? 'Non renseigné' }}</p>
+                    <p><strong>Email:</strong><br>{{ order.customerEmail ?? 'Non renseigné' }}</p>
+                    <p><strong>Téléphone:</strong><br>{{ order.customerPhone ?? 'Non renseigné' }}</p>
+                {% endif %}
             </div>
         </div>
 

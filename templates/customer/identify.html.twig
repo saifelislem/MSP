@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Identification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/linearicons-v1.0.0/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/css-hamburgers/hamburgers.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-theme.css') }}">
+    <style>
+        body { padding-top: 80px; }
+    </style>
+</head>
+<body class="animsition">
+
+    {% include 'includes/header.html.twig' %}
+
+    <!-- Sidebar Panier -->
+    {% include 'includes/cart_sidebar.html.twig' %}
+
+    <!-- breadcrumb -->
+    <div class="container">
+        <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+            <a href="{{ path('app_home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Accueil
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <a href="{{ path('app_cart') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Panier
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">Identification</span>
+        </div>
+    </div>
+
+    <!-- Identification -->
+    <section class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <h2 class="ltext-109 cl2 p-b-30 txt-center">
+                <i class="zmdi zmdi-account-circle m-r-10"></i>Vos informations
+            </h2>
+            <p class="stext-102 cl6 txt-center p-b-50">
+                Veuillez renseigner vos coordonnées pour finaliser votre commande
+            </p>
+            
+            <div class="row">
+                <div class="col-lg-6 col-xl-6 m-lr-auto">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px;">
+                        <form method="POST" action="{{ path('customer_identify_process') }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="bor8 m-b-20 how-pos4-parent">
+                                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="prenom" placeholder="Prénom *" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bor8 m-b-20 how-pos4-parent">
+                                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="nom" placeholder="Nom *" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bor8 m-b-20 how-pos4-parent">
+                                <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="email" name="email" placeholder="Email *" required>
+                            </div>
+
+                            <div class="bor8 m-b-20 how-pos4-parent">
+                                <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="tel" name="telephone" placeholder="Téléphone *" required>
+                            </div>
+
+                            <div class="bor8 m-b-20 how-pos4-parent">
+                                <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="adresse" placeholder="Adresse (optionnel)">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="bor8 m-b-20 how-pos4-parent">
+                                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="ville" placeholder="Ville">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bor8 m-b-20 how-pos4-parent">
+                                        <input class="stext-111 cl2 plh3 size-116 p-l-20 p-r-30" type="text" name="code_postal" placeholder="Code postal">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="stext-101 cl0 bg3 bor14 hov-btn3 trans-04 pointer" style="width: 100%; padding: 15px; border-radius: 8px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+                                <i class="zmdi zmdi-check" style="margin-right: 8px;"></i> Continuer vers le paiement
+                            </button>
+
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="{{ path('app_cart') }}" class="stext-102 cl6 hov-cl1">
+                                    <i class="zmdi zmdi-arrow-left m-r-5"></i> Retour au panier
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/popper.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+
+</body>
+</html>

@@ -139,20 +139,7 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/checkout', name: 'app_cart_checkout', methods: ['GET'])]
-    public function checkout(): Response
-    {
-        $cart = $this->cartService->getCurrentCart();
 
-        if ($cart->getCartItems()->count() === 0) {
-            $this->addFlash('warning', 'Votre panier est vide.');
-            return $this->redirectToRoute('app_home');
-        }
-
-        return $this->render('cart/checkout.html.twig', [
-            'cart' => $cart,
-        ]);
-    }
 
     #[Route('/create-order', name: 'app_cart_create_order', methods: ['POST'])]
     public function createOrder(Request $request, \App\Service\OrderService $orderService, LoggerInterface $logger): Response

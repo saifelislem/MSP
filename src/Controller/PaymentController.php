@@ -77,7 +77,8 @@ class PaymentController extends AbstractController
         Request $request,
         StripePaymentService $stripeService,
         CartService $cartService,
-        OrderService $orderService
+        OrderService $orderService,
+        \Doctrine\ORM\EntityManagerInterface $em
     ): Response {
         $sessionId = $request->query->get('session_id');
         
@@ -95,15 +96,34 @@ class PaymentController extends AbstractController
                 $cart = $cartService->getCurrentCart();
                 
                 if ($cart->getCartItems()->count() > 0) {
+                    // Récupérer le customer de la session
+                    $customerId = $request->getSession()->get('customer_id');
+                    $customer = null;
+                    
+                    if ($customerId) {
+                        $customer = $em->getRepository(\App\Entity\Customer::class)->find($customerId);
+                    }
+                    
                     // Créer la commande
                     $customerData = [
-                        'name' => $session->customer_details->name ?? 'Client',
-                        'email' => $session->customer_details->email ?? '',
+                        'name' => $customer ? $customer->getFullName() : ($session->customer_details->name ?? 'Client'),
+                        'email' => $customer ? $customer->getEmail() : ($session->customer_details->email ?? ''),
+                        'phone' => $customer ? $customer->getTelephone() : '',
                         'notes' => 'Paiement Stripe - Session: ' . $sessionId,
                     ];
                     
                     $order = $orderService->createOrderFromCart($cart, $customerData);
+                    
+                    // Lier le customer à la commande
+                    if ($customer) {
+                        $order->setCustomer($customer);
+                        $em->flush();
+                    }
+                    
                     $orderService->clearCartAfterOrder($cart);
+                    
+                    // Nettoyer la session
+                    $request->getSession()->remove('customer_id');
                     
                     return $this->render('payment/success.html.twig', [
                         'order' => $order,

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Mon Profil</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-theme.css') }}">
+    <style>
+        body { padding-top: 80px; }
+    </style>
+</head>
+<body class="animsition">
+
+    {% include 'includes/header.html.twig' %}
+    {% include 'includes/cart_sidebar.html.twig' %}
+
+    <!-- breadcrumb -->
+    <div class="container">
+        <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+            <a href="{{ path('app_home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Accueil
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">Mon Profil</span>
+        </div>
+    </div>
+
+    <!-- Profil -->
+    <section class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <h2 class="ltext-109 cl2 p-b-30 txt-center">
+                <i class="zmdi zmdi-account-circle m-r-10"></i>Mon Profil
+            </h2>
+            
+            <div class="row">
+                <!-- Informations personnelles -->
+                <div class="col-lg-6 m-b-50">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px;">
+                        <h4 class="mtext-109 cl2 p-b-30">
+                            <i class="zmdi zmdi-account m-r-10"></i>Mes informations
+                        </h4>
+
+                        <div class="p-b-20">
+                            <p class="stext-102 cl6 p-b-5">Nom complet</p>
+                            <p class="mtext-106 cl2">{{ customer.fullName }}</p>
+                        </div>
+
+                        <div class="p-b-20">
+                            <p class="stext-102 cl6 p-b-5">Email</p>
+                            <p class="mtext-106 cl2">{{ customer.email }}</p>
+                        </div>
+
+                        <div class="p-b-20">
+                            <p class="stext-102 cl6 p-b-5">Téléphone</p>
+                            <p class="mtext-106 cl2">{{ customer.telephone }}</p>
+                        </div>
+
+                        {% if customer.adresse %}
+                        <div class="p-b-20">
+                            <p class="stext-102 cl6 p-b-5">Adresse</p>
+                            <p class="mtext-106 cl2">
+                                {{ customer.adresse }}<br>
+                                {% if customer.codePostal %}{{ customer.codePostal }}{% endif %}
+                                {% if customer.ville %}{{ customer.ville }}{% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <div class="p-t-20">
+                            <p class="stext-102 cl6">
+                                <i class="zmdi zmdi-calendar m-r-5"></i>
+                                Client depuis le {{ customer.createdAt|date('d/m/Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mes commandes -->
+                <div class="col-lg-6 m-b-50">
+                    <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px;">
+                        <h4 class="mtext-109 cl2 p-b-30">
+                            <i class="zmdi zmdi-shopping-cart m-r-10"></i>Mes commandes
+                        </h4>
+
+                        {% if customer.orders|length > 0 %}
+                            <p class="stext-102 cl6 p-b-20">
+                                Vous avez passé <strong>{{ customer.orders|length }}</strong> commande(s)
+                            </p>
+
+                            <div style="max-height: 400px; overflow-y: auto;">
+                                {% for order in customer.orders %}
+                                <div class="bor12 p-t-15 p-b-15 m-b-15">
+                                    <div class="flex-w flex-sb-m">
+                                        <div>
+                                            <p class="stext-102 cl2"><strong>{{ order.orderNumber }}</strong></p>
+                                            <p class="stext-102 cl6">{{ order.createdAt|date('d/m/Y à H:i') }}</p>
+                                        </div>
+                                        <div class="txt-right">
+                                            <p class="mtext-106" style="color: #2F4E9B;">{{ order.total|number_format(2) }}€</p>
+                                            <span class="stext-102" style="color: #8A92AD;">{{ order.statusLabel }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="stext-102 cl6 txt-center p-t-30 p-b-30">
+                                <i class="zmdi zmdi-shopping-cart" style="font-size: 60px; color: #DADDEB; display: block; margin-bottom: 15px;"></i>
+                                Vous n'avez pas encore passé de commande
+                            </p>
+                            <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="text-decoration: none;">
+                                <i class="zmdi zmdi-shopping-basket m-r-5"></i> Découvrir nos produits
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="row">
+                <div class="col-12 txt-center p-t-30">
+                    <a href="{{ path('customer_logout') }}" class="stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer" style="text-decoration: none; display: inline-block;">
+                        <i class="zmdi zmdi-power m-r-5"></i> Se déconnecter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/popper.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+
+</body>
+</html>

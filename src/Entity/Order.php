@@ -40,6 +40,10 @@ class Order
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $notes = null;
 
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Customer $customer = null;
+
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $orderItems;
 
@@ -170,6 +174,17 @@ class Order
                 $orderItem->setOrder(null);
             }
         }
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
         return $this;
     }
 
