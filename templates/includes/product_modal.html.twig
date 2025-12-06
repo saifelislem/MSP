@@ -8,6 +8,7 @@
                 <img src="{{ asset('images/icons/icon-close.png') }}" alt="CLOSE">
             </button>
 
+            <!-- PARTIE 1 & 2: Image + Formulaire -->
             <div class="row" id="modal-product-content">
                 <div class="col-md-5 col-lg-4 p-b-30">
                     <div class="p-l-25 p-r-30 p-lr-0-lg">
@@ -34,52 +35,117 @@
                         </span>
 
                         <p class="stext-102 cl3 p-t-23" id="modal-product-description">
-                            <strong>Remplissez tous les champs</strong> pour créer votre produit personnalisé.
+                            <strong>Choisissez votre type d'enseigne</strong> : texte personnalisé ou logo.
                         </p>
 
                         <!--  -->
                         <div class="p-t-33">
-                            <!-- Texte -->
-                            <div class="flex-w flex-r-m p-b-10">
+                            <!-- Onglets Texte / Logo -->
+                            <div class="flex-w flex-r-m p-b-20">
                                 <div class="size-203 flex-c-m respon6">
-                                    Texte
+                                    Type
                                 </div>
-
                                 <div class="size-204 respon6-next">
-                                    <div class="rs1-select2 bor8 bg0">
-                                        <input type="text" id="modal-product-text" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Entrez votre texte ici..." maxlength="100" required>
+                                    <div class="product-tabs" style="display: flex; gap: 10px;">
+                                        <button type="button" class="tab-btn active" data-tab="text" style="flex: 1; padding: 10px; border: 2px solid #007bff; background: #007bff; color: white; border-radius: 5px; cursor: pointer;">
+                                            <i class="zmdi zmdi-format-color-text m-r-5"></i>Texte
+                                        </button>
+                                        <button type="button" class="tab-btn" data-tab="logo" style="flex: 1; padding: 10px; border: 2px solid #007bff; background: white; color: #007bff; border-radius: 5px; cursor: pointer;">
+                                            <i class="zmdi zmdi-image m-r-5"></i>Logo
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Largeur -->
-                            <div class="flex-w flex-r-m p-b-10">
-                                <div class="size-203 flex-c-m respon6">
-                                    Largeur (cm)
-                                </div>
+                            <!-- Contenu Texte -->
+                            <div id="text-content" class="tab-content">
+                                <!-- Texte -->
+                                <div class="flex-w flex-r-m p-b-10">
+                                    <div class="size-203 flex-c-m respon6">
+                                        Texte
+                                    </div>
 
-                                <div class="size-204 respon6-next">
-                                    <div class="rs1-select2 bor8 bg0">
-                                        <input type="number" id="modal-product-largeur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 10" min="1" max="200" required>
+                                    <div class="size-204 respon6-next">
+                                        <div class="rs1-select2 bor8 bg0">
+                                            <input type="text" id="modal-product-text" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Entrez votre texte ici..." maxlength="100" required>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Hauteur -->
-                            <div class="flex-w flex-r-m p-b-10">
-                                <div class="size-203 flex-c-m respon6">
-                                    Hauteur (cm)
-                                </div>
+                            <!-- Contenu Logo -->
+                            <div id="logo-content" class="tab-content" style="display: none;">
+                                <!-- Upload de logo -->
+                                <div class="flex-w flex-r-m p-b-10">
+                                    <div class="size-203 flex-c-m respon6">
+                                        Logo
+                                    </div>
 
-                                <div class="size-204 respon6-next">
-                                    <div class="rs1-select2 bor8 bg0">
-                                        <input type="number" id="modal-product-hauteur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 10" min="1" max="200" required>
+                                    <div class="size-204 respon6-next">
+                                        <!-- Zone de drop -->
+                                        <div id="logo-drop-zone" class="logo-upload-zone" style="
+                                            border: 2px dashed #007bff;
+                                            border-radius: 8px;
+                                            padding: 30px;
+                                            text-align: center;
+                                            background: #f8f9fa;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                        ">
+                                            <div id="logo-upload-content">
+                                                <i class="zmdi zmdi-cloud-upload" style="font-size: 48px; color: #007bff; margin-bottom: 10px;"></i>
+                                                <p class="stext-102 cl2" style="margin: 0;">
+                                                    <strong>Glissez votre logo ici</strong><br>
+                                                    ou cliquez pour parcourir
+                                                </p>
+                                                <small class="stext-102 cl6">PNG, JPG, SVG - Max 5MB</small>
+                                            </div>
+                                            
+                                            <!-- Aperçu du logo -->
+                                            <div id="logo-preview" style="display: none;">
+                                                <img id="logo-preview-img" style="max-width: 200px; max-height: 150px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                                <div style="margin-top: 10px;">
+                                                    <button type="button" id="change-logo-btn" class="stext-102" style="background: none; border: 1px solid #007bff; color: #007bff; padding: 5px 15px; border-radius: 3px; cursor: pointer;">
+                                                        Changer le logo
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Input file caché -->
+                                        <input type="file" id="logo-file-input" accept="image/*,.svg" style="display: none;">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Type d'écriture -->
+                            <!-- Hauteur OU Largeur -->
                             <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">
+                                    Dimensions
+                                </div>
+
+                                <div class="size-204 respon6-next">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="stext-102 cl2 p-b-5" style="display: block;">Hauteur (cm)</label>
+                                            <div class="rs1-select2 bor8 bg0">
+                                                <input type="number" id="modal-product-hauteur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 20" min="1" max="200" step="0.1">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="stext-102 cl2 p-b-5" style="display: block;">Largeur (cm)</label>
+                                            <div class="rs1-select2 bor8 bg0">
+                                                <input type="number" id="modal-product-largeur" class="stext-104 cl2 plh3 size-116 p-lr-18" placeholder="Ex: 60" min="1" max="500" step="0.1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="stext-102 cl6 p-t-10" style="display: block;">Remplissez l'un des deux champs, l'autre se calculera automatiquement</small>
+                                    <small class="stext-102" id="dimension-formula" style="display: block; margin-top: 8px; color: #28a745; font-weight: 500;"></small>
+                                </div>
+                            </div>
+
+                            <!-- Type d'écriture (seulement pour le texte) -->
+                            <div class="flex-w flex-r-m p-b-10" id="font-section">
                                 <div class="size-203 flex-c-m respon6">
                                     Police
                                 </div>
@@ -100,6 +166,8 @@
                                     </div>
                                 </div>
                             </div>
+
+
 
                             <!-- Quantité -->
                             <div class="flex-w flex-r-m p-b-10">
@@ -130,18 +198,130 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Preview -->
-                        <div class="flex-w flex-m p-t-30 p-b-30 bor10 p-lr-15 m-t-30">
-                            <div class="w-full">
-                                <h5 class="mtext-107 cl2 p-b-10">Aperçu</h5>
-                                <div id="product-preview" class="bg6 p-all-15 txt-center" style="min-height: 150px; border: 2px dashed #e6e6e6; border-radius: 5px;">
-                                    <p class="stext-102 cl6" id="preview-text">Votre texte apparaîtra ici</p>
-                                    <p class="stext-102 cl6 p-t-10" id="preview-dimensions">Dimensions: 10cm × 10cm</p>
-                                    <p class="stext-102 cl6" id="preview-font">Police: Arial</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PARTIE 3: Aperçu 3D + Personnalisation côte à côte -->
+            <div class="row m-t-30">
+                <div class="col-12">
+                    <div style="border-top: 2px solid #e0e0e0; padding-top: 30px;">
+                        <div class="row" style="margin: 0;">
+                            <!-- Aperçu 3D à gauche (65%) -->
+                            <div class="col-md-8" style="padding-right: 10px;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); padding: 20px; height: 650px; display: flex; flex-direction: column;">
+                                    <!-- Titre -->
+                                    <h5 class="mtext-107" style="color: white; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
+                                        <i class="zmdi zmdi-eye"></i> Aperçu 3D Réaliste
+                                    </h5>
+                                    
+                                    <!-- Canvas 3D -->
+                                    <div style="background: #f5f5f5; border-radius: 8px; overflow: hidden; flex: 1; position: relative;">
+                                        <div id="preview-3d-container" style="width: 100%; height: 100%; background: #1a1a1a; cursor: grab;">
+                                            <canvas id="three-canvas" style="width: 100%; height: 100%;"></canvas>
+                                            
+                                            <!-- Overlay dimensions -->
+                                            <div id="dimension-overlay" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px; font-size: 13px; pointer-events: none; border: 1px solid rgba(255,255,255,0.2);">
+                                                <div style="margin-bottom: 8px;">
+                                                    <i class="zmdi zmdi-ruler"></i> <strong>Largeur:</strong> <span id="dim-width">10 cm</span>
+                                                </div>
+                                                <div style="margin-bottom: 8px;">
+                                                    <i class="zmdi zmdi-ruler"></i> <strong>Hauteur:</strong> <span id="dim-height">10 cm</span>
+                                                </div>
+                                                <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 8px; margin-top: 8px;">
+                                                    <i class="zmdi zmdi-layers"></i> <strong>Profondeur:</strong> <span style="color: #4CAF50;">5 mm</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Infos bas -->
+                                    <div class="p-t-10" style="display: flex; justify-content: space-between; align-items: center; color: white;">
+                                        <div id="preview-font-info">
+                                            <small style="opacity: 0.8;">Police:</small>
+                                            <span id="preview-font" style="font-weight: 600; margin-left: 5px;">Arial</span>
+                                        </div>
+                                        <div>
+                                            <small style="opacity: 0.8; font-size: 11px;">
+                                                <i class="zmdi zmdi-mouse"></i> Glissez | <kbd style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 3px;">R</kbd> Reset
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Personnalisation à droite (35%) -->
+                            <div class="col-md-4" style="padding-left: 10px;">
+                                <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); height: 650px; display: flex; flex-direction: column;">
+                                    <h6 class="mtext-106" style="color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; margin: 0 0 20px 0;">
+                                        <i class="zmdi zmdi-palette"></i> Personnalisation
+                                    </h6>
+                                    
+                                    <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
+                                        
+                                    <!-- Couleur du texte -->
+                                    <div id="color-section-3d">
+                                        <label class="stext-102 cl2 p-b-8" style="display: block; font-weight: 600;">
+                                            <i class="zmdi zmdi-colorize"></i> Couleur
+                                        </label>
+                                        <select class="stext-104 cl2 size-116" id="modal-product-color" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option value="#2A2A2A">⚫ Noir</option>
+                                            <option value="#FFFFFF">⚪ Blanc</option>
+                                            <option value="#E74C3C">🔴 Rouge</option>
+                                            <option value="#3498DB">🔵 Bleu</option>
+                                            <option value="#2ECC71">🟢 Vert</option>
+                                            <option value="#F39C12">🟠 Orange</option>
+                                            <option value="#9B59B6">🟣 Violet</option>
+                                            <option value="#E91E63">🌸 Rose</option>
+                                            <option value="#FFD700">🟡 Or</option>
+                                            <option value="#C0C0C0">⚪ Argent</option>
+                                            <option value="#8B4513">🟤 Marron</option>
+                                            <option value="#00BCD4">🔷 Cyan</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Finition -->
+                                    <div id="material-section-3d">
+                                        <label class="stext-102 cl2 p-b-8" style="display: block; font-weight: 600;">
+                                            <i class="zmdi zmdi-brush"></i> Finition
+                                        </label>
+                                        <select class="stext-104 cl2 size-116" id="modal-product-material" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option value="matte">Mat</option>
+                                            <option value="glossy">Brillant</option>
+                                            <option value="metallic">Métallique</option>
+                                            <option value="chrome">Chrome</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Type de mur -->
+                                    <div>
+                                        <label class="stext-102 cl2 p-b-8" style="display: block; font-weight: 600;">
+                                            <i class="zmdi zmdi-view-dashboard"></i> Type de mur
+                                        </label>
+                                        <select class="stext-104 cl2 size-116" id="modal-wall-type" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option value="white">🏠 Mur Blanc</option>
+                                            <option value="brick">🧱 Mur Brique</option>
+                                            <option value="wood">🪵 Mur Bois</option>
+                                            <option value="concrete">🏗️ Mur Béton</option>
+                                            <option value="dark">🌙 Mur Sombre</option>
+                                            <option value="modern">✨ Mur Moderne</option>
+                                        </select>
+                                        <small class="stext-102 cl6 p-t-5" style="display: block; font-size: 10px;">Visualisez sur différents murs</small>
+                                    </div>
+                                        
+                                    <!-- Info -->
+                                    <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; border-left: 3px solid #2196F3; margin-top: auto;">
+                                        <small class="stext-102" style="color: #1976D2; font-size: 10px; line-height: 1.4;">
+                                            <i class="zmdi zmdi-info"></i> <strong>Astuce:</strong> Glissez la souris pour voir sous tous les angles!
+                                        </small>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
                     </div>
                 </div>
             </div>
@@ -149,57 +329,828 @@
     </div>
 </div>
 
+<style>
+/* Styles pour le conteneur 3D */
+#preview-3d-container {
+    position: relative;
+}
+
+#preview-3d-container:active {
+    cursor: grabbing !important;
+}
+
+#three-canvas {
+    display: block;
+}
+</style>
+
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 <script>
+// Coefficients de police pour le calcul
+const fontCoefficients = {
+    'Arial': 0.45,
+    'Times New Roman': 0.42,
+    'Courier New': 0.50,
+    'Georgia': 0.43,
+    'Verdana': 0.48,
+    'Comic Sans MS': 0.47,
+    'Impact': 0.52,
+    'Trebuchet MS': 0.46
+};
+
+// Variables globales pour le mode et les données du logo
+let currentMode = 'text';
+let logoData = null;
+let logoRatio = null;
+
+// Variables Three.js
+let scene, camera, renderer, textMesh, logoMesh, controls;
+let loadedFont = null;
+
 // Fonction pour fermer le modal
-function closeModal() {
+window.closeModal = function() {
     const modal = document.querySelector('.js-modal1');
     if (modal) {
         modal.classList.remove('show-modal1');
-        // Supprimer aussi le produit en attente si on ferme sans ajouter
-        // sessionStorage.removeItem('pendingProduct'); // Décommentez si vous voulez supprimer
     }
-}
+};
 
-// Mise à jour de l'aperçu en temps réel
-document.addEventListener('DOMContentLoaded', function() {
-    const textInput = document.getElementById('modal-product-text');
-    const largeurInput = document.getElementById('modal-product-largeur');
-    const hauteurInput = document.getElementById('modal-product-hauteur');
-    const typeEcritureSelect = document.getElementById('modal-product-typeEcriture');
+// Variable pour stocker le groupe de la pièce
+let roomGroup = null;
+
+// Créer une pièce 3D avec différents styles de murs
+window.createRoom = function(wallType) {
+    // Supprimer l'ancienne pièce
+    if (roomGroup) {
+        scene.remove(roomGroup);
+        roomGroup.traverse(function(child) {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+        });
+    }
     
-    function updatePreview() {
-        const text = textInput.value || 'Votre texte apparaîtra ici';
-        const largeur = largeurInput.value || '10';
-        const hauteur = hauteurInput.value || '10';
-        const font = typeEcritureSelect.value || 'Arial';
+    roomGroup = new THREE.Group();
+    
+    // Définir les matériaux selon le type de mur
+    let backWallMaterial, sideWallMaterial, floorMaterial;
+    
+    switch(wallType) {
+        case 'brick':
+            // Mur brique
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xA0522D,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8B4513,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8B7355,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+            break;
+        case 'wood':
+            // Mur bois
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xD2691E,
+                roughness: 0.7,
+                metalness: 0.0
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xCD853F,
+                roughness: 0.7,
+                metalness: 0.0
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xA0826D,
+                roughness: 0.6,
+                metalness: 0.0
+            });
+            break;
+        case 'concrete':
+            // Mur béton
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x9E9E9E,
+                roughness: 0.95,
+                metalness: 0.0
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x808080,
+                roughness: 0.95,
+                metalness: 0.0
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x757575,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+            break;
+        case 'dark':
+            // Mur sombre
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2C3E50,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x34495E,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1C2833,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            break;
+        case 'modern':
+            // Mur moderne (gris clair)
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xECF0F1,
+                roughness: 0.5,
+                metalness: 0.2
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xBDC3C7,
+                roughness: 0.5,
+                metalness: 0.2
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x95A5A6,
+                roughness: 0.4,
+                metalness: 0.3
+            });
+            break;
+        default:
+            // Mur blanc (défaut)
+            backWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xF5F5F5,
+                roughness: 0.8,
+                metalness: 0.0
+            });
+            sideWallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xE8E8E8,
+                roughness: 0.8,
+                metalness: 0.0
+            });
+            floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xDDDDDD,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+    }
+    
+    // Mur du fond
+    const backWallGeometry = new THREE.PlaneGeometry(20, 15);
+    const backWall = new THREE.Mesh(backWallGeometry, backWallMaterial);
+    backWall.position.z = -5;
+    backWall.receiveShadow = true;
+    roomGroup.add(backWall);
+    
+    // Mur de gauche
+    const leftWallGeometry = new THREE.PlaneGeometry(15, 15);
+    const leftWall = new THREE.Mesh(leftWallGeometry, sideWallMaterial);
+    leftWall.position.x = -10;
+    leftWall.position.z = 2.5;
+    leftWall.rotation.y = Math.PI / 2;
+    leftWall.receiveShadow = true;
+    roomGroup.add(leftWall);
+    
+    // Mur de droite
+    const rightWall = new THREE.Mesh(leftWallGeometry, sideWallMaterial.clone());
+    rightWall.position.x = 10;
+    rightWall.position.z = 2.5;
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.receiveShadow = true;
+    roomGroup.add(rightWall);
+    
+    // Sol
+    const floorGeometry = new THREE.PlaneGeometry(20, 15);
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -7.5;
+    floor.receiveShadow = true;
+    roomGroup.add(floor);
+    
+    // Plafond
+    const ceiling = new THREE.Mesh(floorGeometry, backWallMaterial.clone());
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.y = 7.5;
+    ceiling.receiveShadow = true;
+    roomGroup.add(ceiling);
+    
+    scene.add(roomGroup);
+};
+
+// Initialiser Three.js
+window.initThreeJS = function() {
+    const container = document.getElementById('preview-3d-container');
+    if (!container) return;
+    
+    // Scène
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xE8E8E8); // Gris clair
+    
+    // Caméra avec perspective
+    camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(5, 2, 8); // Position en angle pour voir la perspective
+    camera.lookAt(0, 0, 0);
+    
+    // Renderer
+    const canvas = document.getElementById('three-canvas');
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Lumières
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+    
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    mainLight.position.set(10, 10, 10);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 2048;
+    mainLight.shadow.mapSize.height = 2048;
+    scene.add(mainLight);
+    
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    fillLight.position.set(-5, 5, 5);
+    scene.add(fillLight);
+    
+    // Créer la pièce 3D
+    createRoom('white');
+    
+    // OrbitControls - pour tourner la caméra autour de la scène
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // Animation fluide
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 5; // Distance minimale
+    controls.maxDistance = 20; // Distance maximale
+    controls.maxPolarAngle = Math.PI / 2; // Ne pas aller sous le sol
+    controls.target.set(0, 0, 0); // Point de focus
+    
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update(); // Mettre à jour les contrôles
+        renderer.render(scene, camera);
+    }
+    animate();
+    
+    // Gestion du resize
+    window.addEventListener('resize', function() {
+        if (container.clientWidth > 0) {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+    });
+};
+
+// Créer le texte 3D avec profondeur de 5mm
+window.create3DText = function(text, font, material) {
+    // Supprimer l'ancien mesh
+    if (textMesh) {
+        scene.remove(textMesh);
+        textMesh.geometry.dispose();
+        textMesh.material.dispose();
+    }
+    
+    // Créer la géométrie du texte avec extrusion de 5mm (0.5 en unités Three.js)
+    const loader = new THREE.FontLoader();
+    
+    // Utiliser une police par défaut de Three.js
+    const shapes = font.generateShapes(text, 1);
+    const geometry = new THREE.ExtrudeGeometry(shapes, {
+        depth: 0.5, // 5mm de profondeur
+        bevelEnabled: true,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
+        bevelSegments: 3
+    });
+    
+    geometry.computeBoundingBox();
+    const centerOffset = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    
+    // Matériau selon le choix
+    let meshMaterial;
+    switch(material) {
+        case 'metal':
+            meshMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x888888,
+                metalness: 0.9,
+                roughness: 0.2
+            });
+            break;
+        case 'gold':
+            meshMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xFFD700,
+                metalness: 0.8,
+                roughness: 0.3
+            });
+            break;
+        case 'blue':
+            meshMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x4A90E2,
+                metalness: 0.8,
+                roughness: 0.3
+            });
+            break;
+        default:
+            meshMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xC0C0C0,
+                metalness: 0.9,
+                roughness: 0.2
+            });
+    }
+    
+    textMesh = new THREE.Mesh(geometry, meshMaterial);
+    textMesh.position.x = centerOffset;
+    textMesh.position.y = -0.5;
+    textMesh.castShadow = true;
+    textMesh.receiveShadow = true;
+    
+    scene.add(textMesh);
+};
+
+// Créer le logo 3D avec profondeur de 5mm
+window.create3DLogo = function(imageData) {
+    // Supprimer l'ancien mesh
+    if (logoMesh) {
+        scene.remove(logoMesh);
+        if (logoMesh.geometry) logoMesh.geometry.dispose();
+        if (Array.isArray(logoMesh.material)) {
+            logoMesh.material.forEach(mat => mat.dispose());
+        } else if (logoMesh.material) {
+            logoMesh.material.dispose();
+        }
+    }
+    
+    // Charger la texture
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(imageData, function(texture) {
+        // Créer une géométrie avec extrusion de 5mm
+        const width = 5;
+        const height = 3;
+        const depth = 0.5; // 5mm de profondeur
         
-        document.getElementById('preview-text').textContent = text;
-        document.getElementById('preview-text').style.fontFamily = font;
-        document.getElementById('preview-dimensions').textContent = `Dimensions: ${largeur}cm × ${hauteur}cm`;
-        document.getElementById('preview-font').textContent = `Police: ${font}`;
+        const geometry = new THREE.BoxGeometry(width, height, depth);
+        
+        // Matériaux pour chaque face
+        const sideMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0xE8E8E8, 
+            metalness: 0.9, 
+            roughness: 0.2,
+            emissive: 0x222222,
+            emissiveIntensity: 0.1
+        });
+        
+        const frontMaterial = new THREE.MeshStandardMaterial({ 
+            map: texture,
+            metalness: 0.3,
+            roughness: 0.4
+        });
+        
+        const materials = [
+            sideMaterial.clone(), // côté droit
+            sideMaterial.clone(), // côté gauche
+            sideMaterial.clone(), // haut
+            sideMaterial.clone(), // bas
+            frontMaterial,        // face avant avec texture
+            sideMaterial.clone()  // face arrière
+        ];
+        
+        logoMesh = new THREE.Mesh(geometry, materials);
+        logoMesh.position.z = -4.75; // Collé sur le mur du fond
+        logoMesh.castShadow = true;
+        logoMesh.receiveShadow = false;
+        // Pas de rotation - le logo reste fixe sur le mur
+        
+        // Ajouter des contours pour plus de réalisme
+        const edges = new THREE.EdgesGeometry(geometry);
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x000000, 
+            opacity: 0.3, 
+            transparent: true 
+        });
+        const wireframe = new THREE.LineSegments(edges, lineMaterial);
+        logoMesh.add(wireframe);
+        
+        scene.add(logoMesh);
+    });
+};
+
+// Mettre à jour l'aperçu 3D
+window.updatePreview = function() {
+    const largeur = document.getElementById('modal-product-largeur').value || '10';
+    const hauteur = document.getElementById('modal-product-hauteur').value || '10';
+    
+    // Mettre à jour les dimensions dans l'overlay
+    document.getElementById('dim-width').textContent = largeur + ' cm';
+    document.getElementById('dim-height').textContent = hauteur + ' cm';
+    
+    if (currentMode === 'text') {
+        updateTextPreview();
+    } else if (currentMode === 'logo') {
+        updateLogoPreview();
+    }
+};
+
+// Mettre à jour l'aperçu texte 3D
+window.updateTextPreview = function() {
+    const text = document.getElementById('modal-product-text').value || 'Votre texte';
+    const font = document.getElementById('modal-product-typeEcriture').value || 'Arial';
+    const color = document.getElementById('modal-product-color').value || '#2A2A2A';
+    const material = document.getElementById('modal-product-material').value || 'matte';
+    
+    // Supprimer le logo 3D s'il existe
+    if (logoMesh) {
+        if (logoMesh.geometry) logoMesh.geometry.dispose();
+        if (Array.isArray(logoMesh.material)) {
+            logoMesh.material.forEach(mat => mat.dispose());
+        } else if (logoMesh.material) {
+            logoMesh.material.dispose();
+        }
+        scene.remove(logoMesh);
+        logoMesh = null;
     }
     
-    if (textInput) textInput.addEventListener('input', updatePreview);
-    if (largeurInput) largeurInput.addEventListener('input', updatePreview);
-    if (hauteurInput) hauteurInput.addEventListener('input', updatePreview);
-    if (typeEcritureSelect) typeEcritureSelect.addEventListener('change', updatePreview);
-});
-
-// Fonction pour ajouter au panier depuis le modal (avec confirmation)
-function addToCartFromModal() {
-    const textInput = document.getElementById('modal-product-text');
-    const text = textInput.value;
-    const largeur = document.getElementById('modal-product-largeur').value;
-    const hauteur = document.getElementById('modal-product-hauteur').value;
-    const typeEcriture = document.getElementById('modal-product-typeEcriture').value;
-    const quantity = document.getElementById('modal-product-quantity').value;
+    // Afficher l'info police
+    const fontInfo = document.getElementById('preview-font-info');
+    if (fontInfo) fontInfo.style.display = 'block';
+    document.getElementById('preview-font').textContent = font;
     
-    // Validation des champs
-    if (!text || text.trim() === '') {
-        alert('⚠️ Veuillez entrer un texte pour votre produit');
+    // Créer le texte 3D avec la police, couleur et finition sélectionnées
+    createSimple3DText(text, color, material, font);
+};
+
+// Cache des polices chargées
+const fontCache = {};
+
+// Mapping des polices vers les fichiers Three.js
+const fontMapping = {
+    'Arial': 'helvetiker_bold.typeface.json',
+    'Times New Roman': 'gentilis_bold.typeface.json',
+    'Courier New': 'helvetiker_regular.typeface.json',
+    'Georgia': 'gentilis_regular.typeface.json',
+    'Verdana': 'helvetiker_bold.typeface.json',
+    'Comic Sans MS': 'helvetiker_regular.typeface.json',
+    'Impact': 'helvetiker_bold.typeface.json',
+    'Trebuchet MS': 'helvetiker_bold.typeface.json'
+};
+
+// Charger la police pour le texte 3D
+window.loadFont = function(fontName, callback) {
+    // Vérifier si la police est déjà en cache
+    if (fontCache[fontName]) {
+        callback(fontCache[fontName]);
         return;
     }
     
+    const loader = new THREE.FontLoader();
+    const fontFile = fontMapping[fontName] || 'helvetiker_bold.typeface.json';
+    const fontUrl = 'https://threejs.org/examples/fonts/' + fontFile;
+    
+    loader.load(fontUrl, function(font) {
+        fontCache[fontName] = font;
+        callback(font);
+    }, undefined, function(error) {
+        console.error('Erreur de chargement de la police:', error);
+        // Fallback vers Helvetica
+        if (fontFile !== 'helvetiker_bold.typeface.json') {
+            loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function(font) {
+                fontCache[fontName] = font;
+                callback(font);
+            });
+        }
+    });
+};
+
+// Créer un texte 3D avec de vraies lettres
+window.createSimple3DText = function(text, color, finish, fontName) {
+    // Supprimer complètement l'ancien mesh
+    if (textMesh) {
+        if (textMesh.geometry) {
+            textMesh.geometry.dispose();
+        }
+        if (textMesh.material) {
+            if (Array.isArray(textMesh.material)) {
+                textMesh.material.forEach(m => m.dispose());
+            } else {
+                textMesh.material.dispose();
+            }
+        }
+        scene.remove(textMesh);
+        textMesh = null;
+    }
+    
+    // Charger la police et créer le texte
+    loadFont(fontName || 'Arial', function(font) {
+        // Convertir la couleur hex en nombre
+        const colorValue = parseInt(color.replace('#', '0x'));
+        
+        // Matériau selon la finition choisie
+        let meshMaterial;
+        switch(finish) {
+            case 'glossy':
+                // Brillant
+                meshMaterial = new THREE.MeshStandardMaterial({ 
+                    color: colorValue,
+                    metalness: 0.2,
+                    roughness: 0.1,
+                    emissive: colorValue,
+                    emissiveIntensity: 0.1
+                });
+                break;
+            case 'metallic':
+                // Métallique
+                meshMaterial = new THREE.MeshStandardMaterial({ 
+                    color: colorValue,
+                    metalness: 0.8,
+                    roughness: 0.3
+                });
+                break;
+            case 'chrome':
+                // Chrome
+                meshMaterial = new THREE.MeshStandardMaterial({ 
+                    color: colorValue,
+                    metalness: 1.0,
+                    roughness: 0.1
+                });
+                break;
+            default:
+                // Mat (défaut)
+                meshMaterial = new THREE.MeshStandardMaterial({ 
+                    color: colorValue,
+                    metalness: 0.1,
+                    roughness: 0.9
+                });
+        }
+        
+        // Ajuster la taille selon la police
+        let fontSize = 1.5;
+        if (fontName === 'Times New Roman' || fontName === 'Georgia') {
+            fontSize = 1.6; // Polices serif un peu plus grandes
+        } else if (fontName === 'Courier New') {
+            fontSize = 1.4; // Police monospace un peu plus petite
+        }
+        
+        // Créer la géométrie du texte avec extrusion de 5mm
+        const textGeometry = new THREE.TextGeometry(text, {
+            font: font,
+            size: fontSize,         // Taille des lettres
+            height: 0.5,            // Profondeur de 5mm (0.5 unités)
+            curveSegments: 12,      // Qualité des courbes
+            bevelEnabled: true,     // Activer les biseaux
+            bevelThickness: 0.03,   // Épaisseur du biseau
+            bevelSize: 0.02,        // Taille du biseau
+            bevelSegments: 5        // Segments du biseau
+        });
+        
+        // Centrer le texte
+        textGeometry.computeBoundingBox();
+        const centerOffset = -0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+        
+        textMesh = new THREE.Mesh(textGeometry, meshMaterial);
+        textMesh.position.x = centerOffset;
+        textMesh.position.y = 0;
+        textMesh.position.z = -4.75; // Collé sur le mur du fond (mur à z=-5)
+        textMesh.castShadow = true;
+        textMesh.receiveShadow = false;
+        // Pas de rotation - les lettres restent fixes sur le mur
+        
+        scene.add(textMesh);
+    });
+};
+
+// Mettre à jour l'aperçu logo
+window.updateLogoPreview = function() {
+    const fontInfo = document.getElementById('preview-font-info');
+    if (fontInfo) fontInfo.style.display = 'none';
+    
+    // Supprimer le texte 3D s'il existe
+    if (textMesh) {
+        if (textMesh.geometry) textMesh.geometry.dispose();
+        if (textMesh.material) {
+            if (Array.isArray(textMesh.material)) {
+                textMesh.material.forEach(m => m.dispose());
+            } else {
+                textMesh.material.dispose();
+            }
+        }
+        scene.remove(textMesh);
+        textMesh = null;
+    }
+    
+    if (logoData) {
+        create3DLogo(logoData);
+    } else {
+        // Afficher un message si pas de logo uploadé
+        console.log('Aucun logo uploadé');
+    }
+};
+
+// Réinitialiser la vue de la caméra
+window.resetCameraView = function() {
+    if (controls) {
+        controls.reset();
+        camera.position.set(5, 2, 8);
+        camera.lookAt(0, 0, 0);
+    }
+};
+
+// Touche R pour réinitialiser la vue
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'r' || e.key === 'R') {
+        resetCameraView();
+    }
+});
+
+// Variable pour éviter les appels multiples
+let updateTimeout = null;
+
+// Calcul automatique de la largeur basé sur la hauteur
+window.calculateLargeur = function() {
+    const hauteur = parseFloat(document.getElementById('modal-product-hauteur').value);
+    const text = document.getElementById('modal-product-text').value;
+    const font = document.getElementById('modal-product-typeEcriture').value;
+    
+    if (hauteur && text && currentMode === 'text') {
+        const N = text.length;
+        const C = fontCoefficients[font] || 0.45;
+        const largeur = (hauteur * C * N) * 1.07;
+        document.getElementById('modal-product-largeur').value = largeur.toFixed(1);
+    }
+    
+    // Debounce pour éviter les appels multiples
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(function() {
+        updatePreview();
+    }, 300);
+};
+
+// Calcul automatique de la hauteur basé sur la largeur
+window.calculateHauteur = function() {
+    const largeur = parseFloat(document.getElementById('modal-product-largeur').value);
+    const text = document.getElementById('modal-product-text').value;
+    const font = document.getElementById('modal-product-typeEcriture').value;
+    
+    if (largeur && text && currentMode === 'text') {
+        const N = text.length;
+        const C = fontCoefficients[font] || 0.45;
+        const hauteur = largeur / ((C * N) * 1.07);
+        document.getElementById('modal-product-hauteur').value = hauteur.toFixed(1);
+    }
+    
+    // Debounce pour éviter les appels multiples
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(function() {
+        updatePreview();
+    }, 300);
+};
+
+// Calcul des dimensions pour le logo
+window.calculateLogoDimensions = function(changedField) {
+    if (currentMode !== 'logo' || !logoRatio) return;
+    
+    const hauteurInput = document.getElementById('modal-product-hauteur');
+    const largeurInput = document.getElementById('modal-product-largeur');
+    
+    if (changedField === 'hauteur') {
+        const hauteur = parseFloat(hauteurInput.value);
+        if (hauteur) {
+            largeurInput.value = (hauteur * logoRatio).toFixed(1);
+        }
+    } else if (changedField === 'largeur') {
+        const largeur = parseFloat(largeurInput.value);
+        if (largeur) {
+            hauteurInput.value = (largeur / logoRatio).toFixed(1);
+        }
+    }
+    updatePreview();
+};
+
+// Gestion de l'upload du logo
+window.setupLogoUpload = function() {
+    const dropZone = document.getElementById('logo-drop-zone');
+    const fileInput = document.getElementById('logo-file-input');
+    const logoPreview = document.getElementById('logo-preview');
+    const logoUploadContent = document.getElementById('logo-upload-content');
+    const changeLogoBtn = document.getElementById('change-logo-btn');
+    
+    // Click sur la zone de drop
+    dropZone.addEventListener('click', function(e) {
+        if (e.target.id !== 'change-logo-btn') {
+            fileInput.click();
+        }
+    });
+    
+    // Drag & drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.style.borderColor = '#0056b3';
+        dropZone.style.background = '#e7f3ff';
+    });
+    
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.style.borderColor = '#007bff';
+        dropZone.style.background = '#f8f9fa';
+    });
+    
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.style.borderColor = '#007bff';
+        dropZone.style.background = '#f8f9fa';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleLogoFile(files[0]);
+        }
+    });
+    
+    // Sélection de fichier
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleLogoFile(e.target.files[0]);
+        }
+    });
+    
+    // Bouton changer le logo
+    changeLogoBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        fileInput.click();
+    });
+};
+
+// Traitement du fichier logo
+window.handleLogoFile = function(file) {
+    // Validation
+    if (!file.type.match('image.*')) {
+        alert('Veuillez sélectionner une image valide');
+        return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Le fichier est trop volumineux (max 5MB)');
+        return;
+    }
+    
+    // Lecture du fichier
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Calculer le ratio
+            logoRatio = img.width / img.height;
+            logoData = e.target.result;
+            
+            // Afficher l'aperçu
+            showLogoPreview(e.target.result);
+            
+            // Calculer les dimensions initiales
+            const hauteur = 10;
+            document.getElementById('modal-product-hauteur').value = hauteur;
+            document.getElementById('modal-product-largeur').value = (hauteur * logoRatio).toFixed(1);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+// Afficher l'aperçu du logo
+window.showLogoPreview = function(dataUrl) {
+    const logoPreview = document.getElementById('logo-preview');
+    const logoUploadContent = document.getElementById('logo-upload-content');
+    const logoPreviewImg = document.getElementById('logo-preview-img');
+    
+    logoPreviewImg.src = dataUrl;
+    logoUploadContent.style.display = 'none';
+    logoPreview.style.display = 'block';
+    
+    // Mettre à jour l'aperçu 3D
+    updatePreview();
+};
+
+// Fonction pour ajouter au panier depuis le modal
+window.addToCartFromModal = function() {
+    const largeur = document.getElementById('modal-product-largeur').value;
+    const hauteur = document.getElementById('modal-product-hauteur').value;
+    const quantity = document.getElementById('modal-product-quantity').value;
+    const imageUrl = document.getElementById('modal-product-text').getAttribute('data-image-url') || '/images/product-detail-01.jpg';
+    const modeleName = document.getElementById('modal-product-text').getAttribute('data-model-name') || 'Produit personnalisé';
+    
+    // Validation des dimensions
     if (!largeur || largeur < 1) {
         alert('⚠️ Veuillez entrer une largeur valide (minimum 1 cm)');
         return;
@@ -210,60 +1161,202 @@ function addToCartFromModal() {
         return;
     }
     
-    // Vérifier si c'est un produit existant (a un data-product-id)
-    const existingProductId = textInput.getAttribute('data-product-id');
-    
-    // Récupérer l'image et le nom du modèle
-    const imageUrl = textInput.getAttribute('data-image-url') || '/images/product-detail-01.jpg';
-    const modeleName = textInput.getAttribute('data-model-name') || 'Produit personnalisé';
-    
-    // Stocker les données du produit temporairement
     const productData = {
-        text: text,
+        mode: currentMode,
         largeur: largeur,
         hauteur: hauteur,
-        typeEcriture: typeEcriture,
         quantity: quantity,
         price: 10.00,
         imageUrl: imageUrl,
         modeleName: modeleName
     };
     
-    // Si c'est un produit existant, ajouter l'ID
-    if (existingProductId) {
-        productData.productId = existingProductId;
+    // Ajouter les données spécifiques au mode
+    if (currentMode === 'text') {
+        const text = document.getElementById('modal-product-text').value;
+        const typeEcriture = document.getElementById('modal-product-typeEcriture').value;
+        const material = document.getElementById('modal-product-material').value;
+        
+        if (!text || text.trim() === '') {
+            alert('⚠️ Veuillez entrer un texte pour votre produit');
+            return;
+        }
+        
+        productData.text = text;
+        productData.typeEcriture = typeEcriture;
+        productData.material = material;
+    } else if (currentMode === 'logo') {
+        if (!logoData) {
+            alert('⚠️ Veuillez uploader un logo');
+            return;
+        }
+        
+        productData.logoData = logoData;
+        productData.logoRatio = logoRatio;
     }
     
-    // Récupérer la liste des produits en attente
-    let pendingProducts = JSON.parse(sessionStorage.getItem('pendingProducts') || '[]');
+    // Envoyer au serveur
+    fetch('/cart/add-custom', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Fermer le modal
+            closeModal();
+            
+            // Mettre à jour le compteur du panier
+            if (typeof updateCartBadge === 'function') {
+                updateCartBadge();
+            }
+            
+            // Afficher une notification
+            if (typeof swal !== 'undefined') {
+                swal({
+                    title: "Produit ajouté!",
+                    text: "Le produit a été ajouté à votre panier",
+                    icon: "success",
+                    button: "OK"
+                });
+            } else {
+                alert('Produit ajouté au panier!');
+            }
+        } else {
+            alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de l\'ajout au panier');
+    });
+};
+
+// Initialisation au chargement du DOM
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des onglets
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const textContent = document.getElementById('text-content');
+    const logoContent = document.getElementById('logo-content');
+    const fontSection = document.getElementById('font-section');
+    const materialSection = document.getElementById('material-section');
     
-    // Ajouter le nouveau produit à la liste
-    pendingProducts.push(productData);
-    
-    // Sauvegarder la liste mise à jour
-    sessionStorage.setItem('pendingProducts', JSON.stringify(pendingProducts));
-    
-    // Fermer le modal
-    document.querySelector('.js-hide-modal1').click();
-    
-    // Réinitialiser le data-product-id pour les prochaines créations
-    textInput.removeAttribute('data-product-id');
-    
-    // Mettre à jour le compteur du panier (ajouter 1 pour le produit en attente)
-    updateCartBadge();
-    
-    // Afficher une notification pour informer l'utilisateur
-    if (typeof swal !== 'undefined') {
-        swal({
-            title: "Produit ajouté!",
-            text: "Cliquez sur l'icône du panier pour confirmer l'ajout",
-            icon: "success",
-            button: "OK"
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.getAttribute('data-tab');
+            currentMode = tab;
+            
+            // Mettre à jour les styles des boutons
+            tabButtons.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'white';
+                b.style.color = '#007bff';
+            });
+            this.classList.add('active');
+            this.style.background = '#007bff';
+            this.style.color = 'white';
+            
+            // Afficher/masquer le contenu
+            const colorSection3d = document.getElementById('color-section-3d');
+            const materialSection3d = document.getElementById('material-section-3d');
+            
+            if (tab === 'text') {
+                textContent.style.display = 'block';
+                logoContent.style.display = 'none';
+                fontSection.style.display = 'flex';
+                if (colorSection3d) colorSection3d.style.display = 'block';
+                if (materialSection3d) materialSection3d.style.display = 'block';
+            } else {
+                textContent.style.display = 'none';
+                logoContent.style.display = 'block';
+                fontSection.style.display = 'none';
+                if (colorSection3d) colorSection3d.style.display = 'none';
+                if (materialSection3d) materialSection3d.style.display = 'none';
+            }
+            
+            // Mettre à jour l'aperçu
+            updatePreview();
         });
-    } else {
-        alert('Produit ajouté! Cliquez sur l\'icône du panier pour confirmer l\'ajout');
+    });
+    
+    // Event listeners pour les champs
+    const textInput = document.getElementById('modal-product-text');
+    const largeurInput = document.getElementById('modal-product-largeur');
+    const hauteurInput = document.getElementById('modal-product-hauteur');
+    const typeEcritureSelect = document.getElementById('modal-product-typeEcriture');
+    
+    if (textInput) {
+        textInput.addEventListener('input', function() {
+            if (currentMode === 'text') {
+                calculateLargeur();
+            }
+        });
     }
-}
-
-
+    
+    if (largeurInput) {
+        largeurInput.addEventListener('input', function() {
+            if (currentMode === 'text') {
+                calculateHauteur();
+            } else if (currentMode === 'logo') {
+                calculateLogoDimensions('largeur');
+            }
+        });
+    }
+    
+    if (hauteurInput) {
+        hauteurInput.addEventListener('input', function() {
+            if (currentMode === 'text') {
+                calculateLargeur();
+            } else if (currentMode === 'logo') {
+                calculateLogoDimensions('hauteur');
+            }
+        });
+    }
+    
+    if (typeEcritureSelect) {
+        typeEcritureSelect.addEventListener('change', function() {
+            if (currentMode === 'text') {
+                calculateLargeur();
+                updatePreview();
+            }
+        });
+    }
+    
+    // Event listener pour le matériau/finition
+    const materialSelect = document.getElementById('modal-product-material');
+    if (materialSelect) {
+        materialSelect.addEventListener('change', function() {
+            updatePreview();
+        });
+    }
+    
+    // Event listener pour la couleur du texte
+    const colorSelect = document.getElementById('modal-product-color');
+    if (colorSelect) {
+        colorSelect.addEventListener('change', function() {
+            updatePreview();
+        });
+    }
+    
+    // Event listener pour le type de mur
+    const wallTypeSelect = document.getElementById('modal-wall-type');
+    if (wallTypeSelect) {
+        wallTypeSelect.addEventListener('change', function() {
+            const wallType = this.value;
+            createRoom(wallType);
+        });
+    }
+    
+    // Initialiser Three.js
+    initThreeJS();
+    
+    // Initialiser l'upload du logo
+    setupLogoUpload();
+    
+    // Initialiser l'aperçu
+    updatePreview();
+});
 </script>
