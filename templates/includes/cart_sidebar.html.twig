@@ -44,7 +44,7 @@
             </div>
 
             <!-- Liste des articles -->
-            {% if cart is defined and cart.cartItems|length > 0 %}
+            {% if cart is defined and cart.cartItems is defined and cart.cartItems|length > 0 %}
                 <ul class="sidebar-cart-list w-full">
                     {% for item in cart.cartItems %}
                     <li class="flex-w flex-t m-b-20 p-b-20 bor12">
@@ -85,7 +85,7 @@
                 <div class="w-full p-t-20">
                     <div class="flex-w flex-sb-m p-b-20 bor12">
                         <span class="mtext-101 cl2">Total:</span>
-                        <span class="mtext-110 cl2" id="sidebar-cart-total">{{ cart.total|number_format(2) }}€</span>
+                        <span class="mtext-110 cl2" id="sidebar-cart-total">{{ cart is defined and cart.total is defined ? cart.total|number_format(2) : '0.00' }}€</span>
                     </div>
 
                     <div class="p-t-20">

@@ -1,0 +1,33 @@
+/* CSS généré automatiquement depuis les paramètres du site */
+
+:root {
+  --primary-color: #2f4e9b;
+  --secondary-color: #8a92ad;
+  --accent-color: #daddeb;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+}
+
+/* Boutons personnalisés */
+.btn-primary, .bg3 {
+  background-color: #2f4e9b !important;
+  color: #ffffff !important;
+  border-color: #2f4e9b !important;
+}
+
+.btn-secondary {
+  background-color: #8a92ad !important;
+  color: #ffffff !important;
+  border-color: #8a92ad !important;
+}
+
+/* Couleurs du thème */
+.cl2, .mtext-105.cl2, .ltext-109.cl2 {
+  color: #2f4e9b !important;
+}
+
+.bor13, .bor14 {
+  border-color: #daddeb !important;
+}
+

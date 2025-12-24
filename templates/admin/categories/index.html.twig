@@ -1,0 +1,100 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Catégories{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📁 Catégories</h1>
+    <a href="{{ path('admin_categories_new') }}" class="btn btn-primary">
+        <i class="zmdi zmdi-plus"></i> Nouvelle catégorie
+    </a>
+</div>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{% endfor %}
+
+<div class="card">
+    <div class="card-body">
+        {% if categories|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ordre</th>
+                            <th>Nom</th>
+                            <th>Slug</th>
+                            <th>Modèles</th>
+                            <th>Options</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td><strong>{{ category.ordre }}</strong></td>
+                            <td>
+                                <strong>{{ category.nom }}</strong>
+                                {% if category.description %}
+                                    <br><small class="text-muted">{{ category.description|slice(0, 50) }}...</small>
+                                {% endif %}
+                            </td>
+                            <td><code>{{ category.slug }}</code></td>
+                            <td>
+                                <span class="badge bg-info">{{ category.modeles|length }} modèle(s)</span>
+                            </td>
+                            <td>
+                                {% if category.supportsLogo %}
+                                    <span class="badge bg-success" title="Cette catégorie supporte les logos">
+                                        <i class="zmdi zmdi-image"></i> Logos
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary" title="Cette catégorie supporte seulement le texte">
+                                        <i class="zmdi zmdi-format-color-text"></i> Texte
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{{ path('admin_categories_toggle', {id: category.id}) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-{{ category.actif ? 'success' : 'secondary' }}">
+                                        {{ category.actif ? '✓ Actif' : '✗ Inactif' }}
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_categories_edit', {id: category.id}) }}" class="btn btn-sm btn-warning">
+                                    <i class="zmdi zmdi-edit"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('admin_categories_delete', {id: category.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="zmdi zmdi-delete"></i> Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center p-5">
+                <i class="zmdi zmdi-folder-outline" style="font-size: 80px; color: #ccc;"></i>
+                <h4 class="mt-3">Aucune catégorie</h4>
+                <p class="text-muted">Créez votre première catégorie pour organiser vos produits</p>
+                <a href="{{ path('admin_categories_new') }}" class="btn btn-primary mt-3">
+                    <i class="zmdi zmdi-plus"></i> Créer une catégorie
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <strong>💡 Astuce:</strong> Les catégories actives s'affichent automatiquement dans la barre de navigation du site. 
+    Utilisez le champ "Ordre" pour contrôler leur position dans le menu.
+</div>
+{% endblock %}

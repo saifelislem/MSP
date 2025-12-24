@@ -1,0 +1,449 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestionnaire de Fichiers{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📁 Gestionnaire de Fichiers</h1>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="fa fa-upload"></i> Télécharger des Fichiers
+        </button>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Retour
+        </a>
+    </div>
+</div>
+
+<!-- Onglets par catégorie -->
+<ul class="nav nav-tabs mb-4" id="categoryTabs">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#logos">
+            <i class="fa fa-image"></i> Logos
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#models">
+            <i class="fa fa-cube"></i> Modèles
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#general">
+            <i class="fa fa-folder"></i> Général
+        </a>
+    </li>
+</ul>
+
+<!-- Contenu des onglets -->
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="logos">
+        <div class="row" id="logos-grid">
+            <!-- Les fichiers logos seront chargés ici -->
+        </div>
+    </div>
+    <div class="tab-pane fade" id="models">
+        <div class="row" id="models-grid">
+            <!-- Les fichiers modèles seront chargés ici -->
+        </div>
+    </div>
+    <div class="tab-pane fade" id="general">
+        <div class="row" id="general-grid">
+            <!-- Les fichiers généraux seront chargés ici -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'upload -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📤 Télécharger des Fichiers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Catégorie</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="logos">Logos</option>
+                            <option value="models">Modèles</option>
+                            <option value="general">Général</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">Fichiers</label>
+                        <input type="file" class="form-control" id="fileInput" name="files[]" multiple accept="image/*">
+                        <small class="text-muted">Formats acceptés: JPG, PNG, GIF, WebP, SVG. Taille max: 5MB par fichier.</small>
+                    </div>
+                    
+                    <!-- Zone de drag & drop -->
+                    <div id="dropZone" class="border border-dashed border-primary rounded p-4 text-center mb-3" style="min-height: 150px; cursor: pointer;">
+                        <i class="fa fa-cloud-upload fa-3x text-primary mb-3"></i>
+                        <p class="mb-0">Glissez vos fichiers ici ou cliquez pour parcourir</p>
+                        <small class="text-muted">Vous pouvez sélectionner plusieurs fichiers à la fois</small>
+                    </div>
+                    
+                    <!-- Aperçu des fichiers sélectionnés -->
+                    <div id="filePreview" class="row"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="uploadBtn">
+                    <i class="fa fa-upload"></i> Télécharger
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de sélection de fichier (pour les formulaires) -->
+<div class="modal fade" id="fileSelectModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">🖼️ Sélectionner un Fichier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="fileSelectGrid">
+                    <!-- Les fichiers seront chargés ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.file-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.file-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+}
+
+.file-thumbnail {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.file-info {
+    font-size: 0.9em;
+}
+
+#dropZone.dragover {
+    background-color: #e3f2fd;
+    border-color: #1976d2;
+}
+
+.file-preview-item {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.file-preview-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales
+    let selectedFiles = [];
+    let currentCallback = null;
+
+    // Initialiser
+    loadFiles();
+    setupUpload();
+    setupFileSelection();
+
+    // Charger les fichiers
+    function loadFiles() {
+        fetch('/admin/files/list')
+            .then(response => response.json())
+            .then(data => {
+                displayFiles(data.files || []);
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des fichiers:', error);
+            });
+    }
+
+    // Afficher les fichiers
+    function displayFiles(files) {
+        const logoGrid = document.getElementById('logos-grid');
+        const modelGrid = document.getElementById('models-grid');
+        const generalGrid = document.getElementById('general-grid');
+
+        // Vider les grilles
+        logoGrid.innerHTML = '';
+        modelGrid.innerHTML = '';
+        generalGrid.innerHTML = '';
+
+        files.forEach(file => {
+            const fileCard = createFileCard(file);
+            
+            if (file.path.includes('/logos/')) {
+                logoGrid.appendChild(fileCard);
+            } else if (file.path.includes('/models/')) {
+                modelGrid.appendChild(fileCard);
+            } else {
+                generalGrid.appendChild(fileCard);
+            }
+        });
+    }
+
+    // Créer une carte de fichier
+    function createFileCard(file) {
+        const col = document.createElement('div');
+        col.className = 'col-md-3 col-sm-6';
+        
+        col.innerHTML = `
+            <div class="file-card">
+                <img src="${file.path}" alt="${file.name}" class="file-thumbnail">
+                <div class="file-info">
+                    <strong>${file.name}</strong><br>
+                    <small class="text-muted">
+                        ${formatFileSize(file.size)} • 
+                        ${new Date(file.modified * 1000).toLocaleDateString()}
+                    </small>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-primary select-file" data-path="${file.path}">
+                        <i class="fa fa-check"></i> Sélectionner
+                    </button>
+                    <button class="btn btn-sm btn-danger delete-file" data-path="${file.path}">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        return col;
+    }
+
+    // Configuration de l'upload
+    function setupUpload() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        // Drag & Drop
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Sélection de fichiers
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Upload
+        uploadBtn.addEventListener('click', uploadFiles);
+    }
+
+    // Gérer les fichiers sélectionnés
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        displayFilePreview();
+    }
+
+    // Afficher l'aperçu des fichiers
+    function displayFilePreview() {
+        const preview = document.getElementById('filePreview');
+        preview.innerHTML = '';
+
+        selectedFiles.forEach((file, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 col-sm-6';
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                col.innerHTML = `
+                    <div class="file-preview-item">
+                        <img src="${e.target.result}" class="file-thumbnail">
+                        <button type="button" class="file-preview-remove" onclick="removeFile(${index})">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <small class="d-block text-center">${file.name}</small>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+            
+            preview.appendChild(col);
+        });
+    }
+
+    // Supprimer un fichier de la sélection
+    window.removeFile = function(index) {
+        selectedFiles.splice(index, 1);
+        displayFilePreview();
+    };
+
+    // Upload des fichiers
+    function uploadFiles() {
+        if (selectedFiles.length === 0) {
+            alert('Veuillez sélectionner au moins un fichier');
+            return;
+        }
+
+        const category = document.getElementById('category').value;
+        const uploadBtn = document.getElementById('uploadBtn');
+        
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Upload...';
+
+        // Upload chaque fichier
+        const promises = selectedFiles.map(file => {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('category', category);
+
+            return fetch('/admin/files/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json());
+        });
+
+        Promise.all(promises)
+            .then(results => {
+                const errors = results.filter(r => r.error);
+                if (errors.length > 0) {
+                    alert('Erreurs lors de l\'upload: ' + errors.map(e => e.error).join(', '));
+                } else {
+                    alert('Fichiers uploadés avec succès!');
+                    selectedFiles = [];
+                    displayFilePreview();
+                    loadFiles();
+                    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                }
+            })
+            .catch(error => {
+                alert('Erreur lors de l\'upload: ' + error.message);
+            })
+            .finally(() => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fa fa-upload"></i> Télécharger';
+            });
+    }
+
+    // Configuration de la sélection de fichiers
+    function setupFileSelection() {
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.select-file')) {
+                const path = e.target.closest('.select-file').dataset.path;
+                if (currentCallback) {
+                    currentCallback(path);
+                    bootstrap.Modal.getInstance(document.getElementById('fileSelectModal')).hide();
+                }
+            }
+            
+            if (e.target.closest('.delete-file')) {
+                const path = e.target.closest('.delete-file').dataset.path;
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
+                    deleteFile(path);
+                }
+            }
+        });
+    }
+
+    // Supprimer un fichier
+    function deleteFile(path) {
+        const formData = new FormData();
+        formData.append('path', path);
+
+        fetch('/admin/files/delete', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadFiles();
+            } else {
+                alert('Erreur lors de la suppression: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de la suppression: ' + error.message);
+        });
+    }
+
+    // Fonction globale pour ouvrir le sélecteur de fichiers
+    window.openFileSelector = function(callback, category = 'general') {
+        currentCallback = callback;
+        
+        // Charger les fichiers de la catégorie
+        fetch(`/admin/files/list?category=${category}`)
+            .then(response => response.json())
+            .then(data => {
+                const grid = document.getElementById('fileSelectGrid');
+                grid.innerHTML = '';
+                
+                (data.files || []).forEach(file => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-2 col-sm-4 col-6';
+                    col.innerHTML = `
+                        <div class="file-card text-center" style="cursor: pointer;" data-path="${file.path}">
+                            <img src="${file.path}" alt="${file.name}" class="file-thumbnail">
+                            <small>${file.name}</small>
+                        </div>
+                    `;
+                    
+                    col.addEventListener('click', () => {
+                        callback(file.path);
+                        bootstrap.Modal.getInstance(document.getElementById('fileSelectModal')).hide();
+                    });
+                    
+                    grid.appendChild(col);
+                });
+                
+                new bootstrap.Modal(document.getElementById('fileSelectModal')).show();
+            });
+    };
+
+    // Utilitaires
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});
+</script>
+{% endblock %}

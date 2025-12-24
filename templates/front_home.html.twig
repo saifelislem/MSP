@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<title>Boutique - Produits Personnalisés</title>
+	<title>{{ site_settings.title }} - {{ site_settings.description }}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+	<link rel="icon" type="image/png" href="{{ site_settings.favicon_url ? asset(site_settings.favicon_url) : asset('images/icons/favicon.png') }}"/>
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
@@ -61,10 +61,14 @@
 			<div class="wrap-menu-desktop" style="background: white;">
 				<nav class="limiter-menu-desktop p-l-45">
 					<a href="{{ path('app_home') }}" class="logo" style="text-decoration: none;">
-						<div style="display: flex; align-items: center; gap: 5px;">
-							<span style="color: #2F4E9B; font-size: 32px; font-weight: bold; letter-spacing: -2px;">MS</span>
-							<span style="color: #8A92AD; font-size: 20px; font-weight: 500;">Lettres</span>
-						</div>
+						{% if site_settings.logo_url %}
+							<img src="{{ asset(site_settings.logo_url) }}" alt="{{ site_settings.title }}" style="height: 40px; max-width: 200px; object-fit: contain;">
+						{% else %}
+							<div style="display: flex; align-items: center; gap: 5px;">
+								<span style="color: #2F4E9B; font-size: 32px; font-weight: bold; letter-spacing: -2px;">MS</span>
+								<span style="color: #8A92AD; font-size: 20px; font-weight: 500;">Lettres</span>
+							</div>
+						{% endif %}
 					</a>
 
 					<div class="menu-desktop">
@@ -72,9 +76,11 @@
 							<li class="active-menu">
 								<a href="{{ path('app_home') }}" style="color: #222;">Accueil</a>
 							</li>
+							{% for category in global_categories %}
 							<li>
-								<a href="{{ path('app_cart') }}" style="color: #222;">Mon Panier</a>
+								<a href="{{ path('category_show', {slug: category.slug}) }}" style="color: #222;">{{ category.nom }}</a>
 							</li>
+							{% endfor %}
 						</ul>
 					</div>	
 
@@ -95,7 +101,13 @@
 		<!-- Header Mobile -->
 		<div class="wrap-header-mobile">
 			<div class="logo-mobile">
-				<a href="{{ path('app_home') }}"><img src="{{ asset('images/icons/logo-01.png') }}" alt="LOGO"></a>
+				<a href="{{ path('app_home') }}">
+					{% if site_settings.logo_url %}
+						<img src="{{ asset(site_settings.logo_url) }}" alt="{{ site_settings.title }}" style="height: 35px; max-width: 150px; object-fit: contain;">
+					{% else %}
+						<img src="{{ asset('images/icons/logo-01.png') }}" alt="LOGO">
+					{% endif %}
+				</a>
 			</div>
 
 			<div class="wrap-icon-header flex-w flex-r-m h-full m-r-15">
@@ -118,9 +130,11 @@
 				<li>
 					<a href="{{ path('app_home') }}">Accueil</a>
 				</li>
+				{% for category in global_categories %}
 				<li>
-					<a href="{{ path('app_cart') }}">Mon Panier</a>
+					<a href="{{ path('category_show', {slug: category.slug}) }}">{{ category.nom }}</a>
 				</li>
+				{% endfor %}
 			</ul>
 		</div>
 	</header>
@@ -149,7 +163,11 @@
 								<img src="{{ asset(modele.image) }}" alt="{{ modele.nom }}" style="width: 100%; height: 220px; object-fit: cover; transition: transform 0.3s;">
 
 								<button class="block2-btn stext-103 cl0 trans-04 js-show-modal1 personalize-btn" 
-										onclick="openModalWithImage('{{ asset(modele.image) }}', '{{ modele.nom }}')"
+										data-image="{{ asset(modele.image) }}"
+										data-name="{{ modele.nom }}"
+										data-product-id="{{ modele.id }}"
+										data-supports-logo="{% if modele.category and modele.category.supportsLogo %}true{% else %}false{% endif %}"
+										onclick="openModalWithImage(this.dataset.image, this.dataset.name, this.dataset.supportsLogo === 'true', this.dataset.productId)"
 										style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: #2F4E9B; border: none; color: white; font-weight: 500; box-shadow: 0 4px 15px rgba(47, 78, 155, 0.4); padding: 12px 25px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0; transition: opacity 0.3s ease;">
 									<i class="zmdi zmdi-edit"></i> Personnaliser
 								</button>
@@ -204,7 +222,7 @@
 
 	<script>
 	// Ouvrir le modal avec l'image sélectionnée
-	function openModalWithImage(imageUrl, modeleName) {
+	function openModalWithImage(imageUrl, modeleName, supportsLogo = false, productId = null) {
 		// Réinitialiser tous les champs
 		document.getElementById('modal-product-text').value = '';
 		document.getElementById('modal-product-largeur').value = '';
@@ -213,9 +231,10 @@
 		document.getElementById('modal-product-quantity').value = 1;
 		document.getElementById('modal-product-text').removeAttribute('data-product-id');
 		
-		// Stocker l'image et le nom du modèle pour l'utiliser plus tard
+		// Stocker l'image, le nom du modèle et l'ID pour l'utiliser plus tard
 		document.getElementById('modal-product-text').setAttribute('data-image-url', imageUrl);
 		document.getElementById('modal-product-text').setAttribute('data-model-name', modeleName);
+		document.getElementById('modal-product-text').setAttribute('data-modele-id', productId || '');
 		
 		// Changer l'image dans le modal
 		const modalImage = document.querySelector('.js-modal1 .item-slick3 img');
@@ -230,27 +249,72 @@
 			modalTitle.textContent = modeleName;
 		}
 		
-		// Mettre à jour l'aperçu
-		updateModalPreview();
+		// Gérer l'affichage des onglets selon la configuration
+		configureModalTabs(supportsLogo);
+	}
+	
+	// Fonction pour configurer les onglets selon la catégorie
+	function configureModalTabs(supportsLogo) {
+		const tabButtons = document.querySelectorAll('.tab-btn');
+		const textContent = document.getElementById('text-content');
+		const logoContent = document.getElementById('logo-content');
+		const logoTab = document.querySelector('.tab-btn[data-tab="logo"]');
+		const textTab = document.querySelector('.tab-btn[data-tab="text"]');
+		const fontSection = document.getElementById('font-section');
+		const materialSection = document.getElementById('material-section');
+		
+		if (supportsLogo) {
+			// Afficher les deux onglets
+			if (logoTab) logoTab.style.display = 'block';
+			if (textTab) textTab.style.display = 'block';
+			
+			// Activer l'onglet texte par défaut
+			tabButtons.forEach(btn => {
+				btn.classList.remove('active');
+				btn.style.background = 'white';
+				btn.style.color = '#007bff';
+			});
+			
+			if (textTab) {
+				textTab.classList.add('active');
+				textTab.style.background = '#007bff';
+				textTab.style.color = 'white';
+			}
+			
+			// Afficher le contenu texte et les sections associées
+			if (textContent) textContent.style.display = 'block';
+			if (logoContent) logoContent.style.display = 'none';
+			if (fontSection) fontSection.style.display = 'flex';
+			if (materialSection) materialSection.style.display = 'flex';
+		} else {
+			// Masquer l'onglet logo, afficher seulement le texte
+			if (logoTab) logoTab.style.display = 'none';
+			if (textTab) {
+				textTab.style.display = 'block';
+				textTab.classList.add('active');
+				textTab.style.background = '#007bff';
+				textTab.style.color = 'white';
+			}
+			
+			// Afficher le contenu texte et toutes les sections
+			if (textContent) textContent.style.display = 'block';
+			if (logoContent) logoContent.style.display = 'none';
+			if (fontSection) fontSection.style.display = 'flex';
+			if (materialSection) materialSection.style.display = 'flex';
+		}
+		
+		// Mettre à jour l'aperçu après configuration
+		if (typeof updatePreview === 'function') {
+			updatePreview();
+		}
 	}
 
 	// Ouvrir le modal avec un formulaire vide (pour le bouton "Créer un produit")
 	function openEmptyModal() {
-		openModalWithImage('/images/product-detail-01.jpg', 'Personnalisez votre produit');
+		openModalWithImage('/images/product-detail-01.jpg', 'Personnalisez votre produit', true);
 	}
 
-	// Mettre à jour l'aperçu du modal
-	function updateModalPreview() {
-		const text = document.getElementById('modal-product-text').value || 'Votre texte apparaîtra ici';
-		const largeur = document.getElementById('modal-product-largeur').value || '10';
-		const hauteur = document.getElementById('modal-product-hauteur').value || '10';
-		const font = document.getElementById('modal-product-typeEcriture').value || 'Arial';
-		
-		document.getElementById('preview-text').textContent = text;
-		document.getElementById('preview-text').style.fontFamily = font;
-		document.getElementById('preview-dimensions').textContent = `Dimensions: ${largeur}cm × ${hauteur}cm`;
-		document.getElementById('preview-font').textContent = `Police: ${font}`;
-	}
+
 
 	// Réinitialiser le formulaire du modal (pour le bouton "Créer un produit")
 	function resetModalForm() {

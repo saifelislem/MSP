@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Finaliser la commande</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/linearicons-v1.0.0/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/css-hamburgers/hamburgers.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-theme.css') }}">
+    <style>
+        body { padding-top: 80px; }
+        .required { color: red; }
+        .address-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .address-card:hover {
+            border-color: #2F4E9B;
+            box-shadow: 0 2px 8px rgba(47,78,155,0.2);
+        }
+        .address-card.selected {
+            border-color: #2F4E9B;
+            background-color: #f8f9ff;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        .form-control:focus {
+            border-color: #2F4E9B;
+            box-shadow: 0 0 0 0.2rem rgba(47,78,155,0.25);
+        }
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        .btn-primary {
+            background-color: #2F4E9B;
+            border-color: #2F4E9B;
+            padding: 12px 30px;
+            border-radius: 6px;
+        }
+        .btn-primary:hover {
+            background-color: #1e3a7a;
+            border-color: #1e3a7a;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 20px;
+        }
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .step.active .step-number {
+            background-color: #2F4E9B;
+            color: white;
+        }
+        .step.completed .step-number {
+            background-color: #28a745;
+            color: white;
+        }
+        .card {
+            border: 1px solid #DADDEB;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #DADDEB;
+            border-radius: 12px 12px 0 0 !important;
+        }
+    </style>
+</head>
+<body class="animsition">
+
+    {% include 'includes/header.html.twig' %}
+
+    <div class="container">
+        <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+            <a href="{{ path('app_home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Accueil
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <a href="{{ path('app_cart') }}" class="stext-109 cl8 hov-cl1 trans-04">
+                Panier
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">Commande</span>
+        </div>
+    </div>
+
+    <section class="bg0 p-t-75 p-b-85">
+        <div class="container">
+            <h2 class="ltext-109 cl2 p-b-30 txt-center">
+                <i class="zmdi zmdi-card m-r-10"></i>Finaliser votre commande
+            </h2>
+
+            <!-- Indicateur d'étapes -->
+            <div class="step-indicator">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Panier</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <span>Informations</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <span>Paiement</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Formulaire de commande -->
+                <div class="col-lg-8">
+                    <form id="checkout-form">
+                        <!-- Informations client -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="zmdi zmdi-account m-r-10"></i>Informations personnelles <span class="required">*</span></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="customerName">Nom complet <span class="required">*</span></label>
+                                            <input type="text" class="form-control" id="customerName" name="customerName" required>
+                                            <div class="error-message" id="customerName-error"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="customerEmail">Email <span class="required">*</span></label>
+                                            <input type="email" class="form-control" id="customerEmail" name="customerEmail" required>
+                                            <div class="error-message" id="customerEmail-error"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="customerPhone">Téléphone <span class="required">*</span></label>
+                                            <input type="tel" class="form-control" id="customerPhone" name="customerPhone" required>
+                                            <div class="error-message" id="customerPhone-error"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Adresse de facturation -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="zmdi zmdi-home m-r-10"></i>Adresse de facturation <span class="required">*</span></h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Adresses existantes (si client connecté) -->
+                                <div id="existing-addresses" style="display: none;">
+                                    <h6>Choisir une adresse existante :</h6>
+                                    <div id="addresses-list"></div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="showNewAddressForm('billing')">
+                                        <i class="zmdi zmdi-plus"></i> Nouvelle adresse
+                                    </button>
+                                </div>
+
+                                <!-- Formulaire nouvelle adresse -->
+                                <div id="billing-address-form">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="billingName">Nom sur l'adresse <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="billingName" name="billingName" required>
+                                                <div class="error-message" id="billingName-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="billingCompany">Société (optionnel)</label>
+                                                <input type="text" class="form-control" id="billingCompany" name="billingCompany">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="billingStreet">Adresse <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="billingStreet" name="billingStreet" required>
+                                        <div class="error-message" id="billingStreet-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="billingAdditionalInfo">Complément d'adresse</label>
+                                        <input type="text" class="form-control" id="billingAdditionalInfo" name="billingAdditionalInfo" placeholder="Appartement, étage, etc.">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="billingPostalCode">Code postal <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="billingPostalCode" name="billingPostalCode" pattern="[0-9]{5}" required>
+                                                <div class="error-message" id="billingPostalCode-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="billingCity">Ville <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="billingCity" name="billingCity" required>
+                                                <div class="error-message" id="billingCity-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="billingCountry">Pays <span class="required">*</span></label>
+                                                <select class="form-control" id="billingCountry" name="billingCountry" required>
+                                                    <option value="France" selected>France</option>
+                                                    <option value="Belgique">Belgique</option>
+                                                    <option value="Suisse">Suisse</option>
+                                                    <option value="Luxembourg">Luxembourg</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Adresse de livraison -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="zmdi zmdi-truck m-r-10"></i>Adresse de livraison</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="sameAsBilling" name="sameAsBilling" checked onchange="toggleShippingAddress()">
+                                    <label class="form-check-label" for="sameAsBilling">
+                                        Identique à l'adresse de facturation
+                                    </label>
+                                </div>
+
+                                <div id="shipping-address-form" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="shippingName">Nom sur l'adresse <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="shippingName" name="shippingName">
+                                                <div class="error-message" id="shippingName-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="shippingCompany">Société (optionnel)</label>
+                                                <input type="text" class="form-control" id="shippingCompany" name="shippingCompany">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shippingStreet">Adresse <span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="shippingStreet" name="shippingStreet">
+                                        <div class="error-message" id="shippingStreet-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shippingAdditionalInfo">Complément d'adresse</label>
+                                        <input type="text" class="form-control" id="shippingAdditionalInfo" name="shippingAdditionalInfo" placeholder="Appartement, étage, etc.">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="shippingPostalCode">Code postal <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="shippingPostalCode" name="shippingPostalCode" pattern="[0-9]{5}">
+                                                <div class="error-message" id="shippingPostalCode-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="shippingCity">Ville <span class="required">*</span></label>
+                                                <input type="text" class="form-control" id="shippingCity" name="shippingCity">
+                                                <div class="error-message" id="shippingCity-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="shippingCountry">Pays <span class="required">*</span></label>
+                                                <select class="form-control" id="shippingCountry" name="shippingCountry">
+                                                    <option value="France" selected>France</option>
+                                                    <option value="Belgique">Belgique</option>
+                                                    <option value="Suisse">Suisse</option>
+                                                    <option value="Luxembourg">Luxembourg</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="zmdi zmdi-comment-text m-r-10"></i>Notes (optionnel)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="notes">Commentaires sur votre commande</label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Instructions spéciales, préférences de livraison, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Résumé de commande -->
+                <div class="col-lg-4">
+                    <div class="card" style="position: sticky; top: 100px;">
+                        <div class="card-header">
+                            <h5><i class="zmdi zmdi-shopping-cart m-r-10"></i>Résumé de la commande</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="order-summary">
+                                <!-- Le résumé sera chargé ici via JavaScript -->
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="submitOrder()">
+                                    <i class="zmdi zmdi-card m-r-5"></i>Finaliser la commande
+                                </button>
+                                <a href="{{ path('app_cart') }}" class="btn btn-outline-secondary">
+                                    <i class="zmdi zmdi-arrow-left m-r-5"></i>Retour au panier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <script>
+        // Variables globales
+        let currentCustomer = null;
+        let customerAddresses = [];
+
+        // Charger le résumé de commande
+        function loadOrderSummary() {
+            fetch('/cart/count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('order-summary').innerHTML = `
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Articles (${data.count})</span>
+                            <span>${data.total.toFixed(2)}€</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Livraison</span>
+                            <span>Gratuite</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total</span>
+                            <span>${data.total.toFixed(2)}€</span>
+                        </div>
+                    `;
+                });
+        }
+
+        // Basculer l'affichage de l'adresse de livraison
+        function toggleShippingAddress() {
+            const sameAsBilling = document.getElementById('sameAsBilling').checked;
+            const shippingForm = document.getElementById('shipping-address-form');
+            
+            if (sameAsBilling) {
+                shippingForm.style.display = 'none';
+                // Retirer les attributs required des champs de livraison
+                shippingForm.querySelectorAll('input[required]').forEach(input => {
+                    input.removeAttribute('required');
+                });
+            } else {
+                shippingForm.style.display = 'block';
+                // Ajouter les attributs required aux champs obligatoires
+                ['shippingName', 'shippingStreet', 'shippingPostalCode', 'shippingCity'].forEach(fieldId => {
+                    document.getElementById(fieldId).setAttribute('required', 'required');
+                });
+            }
+        }
+
+        // Afficher le formulaire de nouvelle adresse
+        function showNewAddressForm(type) {
+            document.getElementById(`${type}-address-form`).style.display = 'block';
+        }
+
+        // Valider les champs obligatoires
+        function validateRequiredFields() {
+            const requiredFields = [
+                'customerName', 'customerEmail', 'customerPhone',
+                'billingName', 'billingStreet', 'billingPostalCode', 'billingCity'
+            ];
+
+            // Ajouter les champs de livraison si nécessaire
+            if (!document.getElementById('sameAsBilling').checked) {
+                requiredFields.push('shippingName', 'shippingStreet', 'shippingPostalCode', 'shippingCity');
+            }
+
+            let isValid = true;
+            const errors = {};
+
+            // Effacer les erreurs précédentes
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field || !field.value.trim()) {
+                    isValid = false;
+                    errors[fieldId] = 'Ce champ est obligatoire';
+                    if (field) {
+                        field.classList.add('is-invalid');
+                        const errorEl = document.getElementById(`${fieldId}-error`);
+                        if (errorEl) errorEl.textContent = errors[fieldId];
+                    }
+                }
+            });
+
+            // Validation spécifique de l'email
+            const email = document.getElementById('customerEmail').value;
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                isValid = false;
+                errors.customerEmail = 'Email invalide';
+                document.getElementById('customerEmail').classList.add('is-invalid');
+                document.getElementById('customerEmail-error').textContent = errors.customerEmail;
+            }
+
+            // Validation du téléphone
+            const phone = document.getElementById('customerPhone').value;
+            if (phone && !/^[0-9\s\-\+\(\)\.]{10,}$/.test(phone)) {
+                isValid = false;
+                errors.customerPhone = 'Numéro de téléphone invalide';
+                document.getElementById('customerPhone').classList.add('is-invalid');
+                document.getElementById('customerPhone-error').textContent = errors.customerPhone;
+            }
+
+            // Validation du code postal
+            ['billingPostalCode', 'shippingPostalCode'].forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && field.value && !/^\d{5}$/.test(field.value)) {
+                    isValid = false;
+                    errors[fieldId] = 'Le code postal doit contenir 5 chiffres';
+                    field.classList.add('is-invalid');
+                    const errorEl = document.getElementById(`${fieldId}-error`);
+                    if (errorEl) errorEl.textContent = errors[fieldId];
+                }
+            });
+
+            return { isValid, errors };
+        }
+
+        // Soumettre la commande
+        function submitOrder() {
+            const validation = validateRequiredFields();
+            
+            if (!validation.isValid) {
+                alert('Veuillez remplir tous les champs obligatoires correctement.');
+                return;
+            }
+
+            // Préparer les données de la commande
+            const orderData = {
+                customerName: document.getElementById('customerName').value,
+                customerEmail: document.getElementById('customerEmail').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                notes: document.getElementById('notes').value,
+                billingAddress: {
+                    name: document.getElementById('billingName').value,
+                    company: document.getElementById('billingCompany').value,
+                    street: document.getElementById('billingStreet').value,
+                    additionalInfo: document.getElementById('billingAdditionalInfo').value,
+                    postalCode: document.getElementById('billingPostalCode').value,
+                    city: document.getElementById('billingCity').value,
+                    country: document.getElementById('billingCountry').value
+                }
+            };
+
+            // Adresse de livraison
+            if (document.getElementById('sameAsBilling').checked) {
+                orderData.shippingAddress = 'same_as_billing';
+            } else {
+                orderData.shippingAddress = {
+                    name: document.getElementById('shippingName').value,
+                    company: document.getElementById('shippingCompany').value,
+                    street: document.getElementById('shippingStreet').value,
+                    additionalInfo: document.getElementById('shippingAdditionalInfo').value,
+                    postalCode: document.getElementById('shippingPostalCode').value,
+                    city: document.getElementById('shippingCity').value,
+                    country: document.getElementById('shippingCountry').value
+                };
+            }
+
+            // Envoyer la commande
+            fetch('/cart/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Stocker l'ID de commande et rediriger vers le paiement
+                    sessionStorage.setItem('orderId', data.orderId);
+                    window.location.href = `/payment/create-checkout-session?orderId=${data.orderId}`;
+                } else {
+                    alert('Erreur lors de la création de la commande: ' + data.message);
+                    if (data.errors) {
+                        // Afficher les erreurs spécifiques
+                        Object.keys(data.errors).forEach(field => {
+                            const errorEl = document.getElementById(`${field}-error`);
+                            if (errorEl) {
+                                errorEl.textContent = data.errors[field];
+                                document.getElementById(field).classList.add('is-invalid');
+                            }
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la création de la commande.');
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrderSummary();
+            
+            // Validation en temps réel
+            document.querySelectorAll('input, select, textarea').forEach(field => {
+                field.addEventListener('blur', function() {
+                    if (this.hasAttribute('required') && !this.value.trim()) {
+                        this.classList.add('is-invalid');
+                        const errorEl = document.getElementById(`${this.id}-error`);
+                        if (errorEl) errorEl.textContent = 'Ce champ est obligatoire';
+                    } else {
+                        this.classList.remove('is-invalid');
+                        const errorEl = document.getElementById(`${this.id}-error`);
+                        if (errorEl) errorEl.textContent = '';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        {% include 'includes/footer.html.twig' %}
+    </footer>
+
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+        <span class="symbol-btn-back-to-top">
+            <i class="zmdi zmdi-chevron-up"></i>
+        </span>
+    </div>
+
+    <script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/popper.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+
+</body>
+</html>

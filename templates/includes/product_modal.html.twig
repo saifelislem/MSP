@@ -30,9 +30,7 @@
                             Personnalisez votre produit
                         </h4>
 
-                        <span class="mtext-106 cl2" id="modal-product-price">
-                            10.00€
-                        </span>
+
 
                         <p class="stext-102 cl3 p-t-23" id="modal-product-description">
                             <strong>Choisissez votre type d'enseigne</strong> : texte personnalisé ou logo.
@@ -259,12 +257,34 @@
                                     
                                     <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
                                         
-                                    <!-- Couleur du texte -->
-                                    <div id="color-section-3d">
+                                    <!-- Couleur de la façade -->
+                                    <div id="facade-color-section-3d">
                                         <label class="stext-102 cl2 p-b-8" style="display: block; font-weight: 600;">
-                                            <i class="zmdi zmdi-colorize"></i> Couleur
+                                            <i class="zmdi zmdi-colorize"></i> Couleur façade (texte/logo)
                                         </label>
-                                        <select class="stext-104 cl2 size-116" id="modal-product-color" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <select class="stext-104 cl2 size-116" id="modal-product-facade-color" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option value="#2A2A2A">⚫ Noir</option>
+                                            <option value="#FFFFFF">⚪ Blanc</option>
+                                            <option value="#E74C3C">🔴 Rouge</option>
+                                            <option value="#3498DB">🔵 Bleu</option>
+                                            <option value="#2ECC71">🟢 Vert</option>
+                                            <option value="#F39C12">🟠 Orange</option>
+                                            <option value="#9B59B6">🟣 Violet</option>
+                                            <option value="#E91E63">🌸 Rose</option>
+                                            <option value="#FFD700">🟡 Or</option>
+                                            <option value="#C0C0C0">⚪ Argent</option>
+                                            <option value="#8B4513">🟤 Marron</option>
+                                            <option value="#00BCD4">🔷 Cyan</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Couleur des côtés -->
+                                    <div id="side-color-section-3d">
+                                        <label class="stext-102 cl2 p-b-8" style="display: block; font-weight: 600;">
+                                            <i class="zmdi zmdi-border-color"></i> Couleur côtés (tranches)
+                                        </label>
+                                        <select class="stext-104 cl2 size-116" id="modal-product-side-color" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option value="#E8E8E8" selected>⚪ Gris clair</option>
                                             <option value="#2A2A2A">⚫ Noir</option>
                                             <option value="#FFFFFF">⚪ Blanc</option>
                                             <option value="#E74C3C">🔴 Rouge</option>
@@ -683,7 +703,7 @@ window.create3DText = function(text, font, material) {
     scene.add(textMesh);
 };
 
-// Créer le logo 3D avec profondeur de 5mm
+// Créer le logo 3D avec couleurs façade et côtés personnalisables
 window.create3DLogo = function(imageData) {
     // Supprimer l'ancien mesh
     if (logoMesh) {
@@ -696,23 +716,27 @@ window.create3DLogo = function(imageData) {
         }
     }
     
+    // Récupérer les couleurs choisies
+    const sideColor = document.getElementById('modal-product-side-color').value || '#E8E8E8';
+    const sideColorValue = parseInt(sideColor.replace('#', '0x'));
+    
     // Charger la texture
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(imageData, function(texture) {
-        // Créer une géométrie avec extrusion de 5mm
-        const width = 5;
-        const height = 3;
+        // Créer une géométrie avec extrusion de 5mm - LOGO AGRANDI
+        const width = 8;  // Augmenté de 5 à 8
+        const height = 5; // Augmenté de 3 à 5
         const depth = 0.5; // 5mm de profondeur
         
         const geometry = new THREE.BoxGeometry(width, height, depth);
         
-        // Matériaux pour chaque face
+        // Matériaux pour chaque face avec couleur côtés personnalisable
         const sideMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0xE8E8E8, 
+            color: sideColorValue, 
             metalness: 0.9, 
             roughness: 0.2,
-            emissive: 0x222222,
-            emissiveIntensity: 0.1
+            emissive: sideColorValue,
+            emissiveIntensity: 0.05
         });
         
         const frontMaterial = new THREE.MeshStandardMaterial({ 
@@ -768,10 +792,15 @@ window.updatePreview = function() {
 
 // Mettre à jour l'aperçu texte 3D
 window.updateTextPreview = function() {
-    const text = document.getElementById('modal-product-text').value || 'Votre texte';
+    const textInput = document.getElementById('modal-product-text');
+    const text = textInput && textInput.value ? textInput.value : 'Votre texte';
     const font = document.getElementById('modal-product-typeEcriture').value || 'Arial';
-    const color = document.getElementById('modal-product-color').value || '#2A2A2A';
+    const facadeColor = document.getElementById('modal-product-facade-color').value || '#2A2A2A';
+    const sideColor = document.getElementById('modal-product-side-color').value || '#E8E8E8';
     const material = document.getElementById('modal-product-material').value || 'matte';
+    
+    // Debug: afficher le texte récupéré
+    console.log('Texte à afficher dans l\'aperçu 3D:', text);
     
     // Supprimer le logo 3D s'il existe
     if (logoMesh) {
@@ -790,8 +819,8 @@ window.updateTextPreview = function() {
     if (fontInfo) fontInfo.style.display = 'block';
     document.getElementById('preview-font').textContent = font;
     
-    // Créer le texte 3D avec la police, couleur et finition sélectionnées
-    createSimple3DText(text, color, material, font);
+    // Créer le texte 3D avec les couleurs façade et côtés
+    createSimple3DText(text, facadeColor, sideColor, material, font);
 };
 
 // Cache des polices chargées
@@ -836,8 +865,16 @@ window.loadFont = function(fontName, callback) {
     });
 };
 
-// Créer un texte 3D avec de vraies lettres
-window.createSimple3DText = function(text, color, finish, fontName) {
+// Créer un texte 3D avec couleurs façade et côtés séparées
+window.createSimple3DText = function(text, facadeColor, sideColor, finish, fontName) {
+    // Debug: vérifier le texte reçu
+    console.log('createSimple3DText appelée avec le texte:', text);
+    
+    // S'assurer que le texte n'est pas vide ou undefined
+    if (!text || text.trim() === '') {
+        text = 'Votre texte';
+    }
+    
     // Supprimer complètement l'ancien mesh
     if (textMesh) {
         if (textMesh.geometry) {
@@ -856,78 +893,83 @@ window.createSimple3DText = function(text, color, finish, fontName) {
     
     // Charger la police et créer le texte
     loadFont(fontName || 'Arial', function(font) {
-        // Convertir la couleur hex en nombre
-        const colorValue = parseInt(color.replace('#', '0x'));
+        // Convertir les couleurs hex en nombres
+        const facadeColorValue = parseInt(facadeColor.replace('#', '0x'));
+        const sideColorValue = parseInt(sideColor.replace('#', '0x'));
         
-        // Matériau selon la finition choisie
-        let meshMaterial;
-        switch(finish) {
-            case 'glossy':
-                // Brillant
-                meshMaterial = new THREE.MeshStandardMaterial({ 
-                    color: colorValue,
-                    metalness: 0.2,
-                    roughness: 0.1,
-                    emissive: colorValue,
-                    emissiveIntensity: 0.1
-                });
-                break;
-            case 'metallic':
-                // Métallique
-                meshMaterial = new THREE.MeshStandardMaterial({ 
-                    color: colorValue,
-                    metalness: 0.8,
-                    roughness: 0.3
-                });
-                break;
-            case 'chrome':
-                // Chrome
-                meshMaterial = new THREE.MeshStandardMaterial({ 
-                    color: colorValue,
-                    metalness: 1.0,
-                    roughness: 0.1
-                });
-                break;
-            default:
-                // Mat (défaut)
-                meshMaterial = new THREE.MeshStandardMaterial({ 
-                    color: colorValue,
-                    metalness: 0.1,
-                    roughness: 0.9
-                });
+        // Créer les matériaux pour façade et côtés
+        function createMaterial(colorValue, finish) {
+            switch(finish) {
+                case 'glossy':
+                    return new THREE.MeshStandardMaterial({ 
+                        color: colorValue,
+                        metalness: 0.2,
+                        roughness: 0.1,
+                        emissive: colorValue,
+                        emissiveIntensity: 0.1
+                    });
+                case 'metallic':
+                    return new THREE.MeshStandardMaterial({ 
+                        color: colorValue,
+                        metalness: 0.8,
+                        roughness: 0.3
+                    });
+                case 'chrome':
+                    return new THREE.MeshStandardMaterial({ 
+                        color: colorValue,
+                        metalness: 1.0,
+                        roughness: 0.1
+                    });
+                default:
+                    return new THREE.MeshStandardMaterial({ 
+                        color: colorValue,
+                        metalness: 0.1,
+                        roughness: 0.9
+                    });
+            }
         }
+        
+        // Matériaux pour chaque face
+        const facadeMaterial = createMaterial(facadeColorValue, finish);
+        const sideMaterial = createMaterial(sideColorValue, finish);
         
         // Ajuster la taille selon la police
         let fontSize = 1.5;
         if (fontName === 'Times New Roman' || fontName === 'Georgia') {
-            fontSize = 1.6; // Polices serif un peu plus grandes
+            fontSize = 1.6;
         } else if (fontName === 'Courier New') {
-            fontSize = 1.4; // Police monospace un peu plus petite
+            fontSize = 1.4;
         }
         
         // Créer la géométrie du texte avec extrusion de 5mm
         const textGeometry = new THREE.TextGeometry(text, {
             font: font,
-            size: fontSize,         // Taille des lettres
-            height: 0.5,            // Profondeur de 5mm (0.5 unités)
-            curveSegments: 12,      // Qualité des courbes
-            bevelEnabled: true,     // Activer les biseaux
-            bevelThickness: 0.03,   // Épaisseur du biseau
-            bevelSize: 0.02,        // Taille du biseau
-            bevelSegments: 5        // Segments du biseau
+            size: fontSize,
+            height: 0.5,            // Profondeur de 5mm
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelSegments: 5
         });
+        
+        // Créer un array de matériaux pour chaque face
+        // Index 0 = face avant (façade), Index 1 = face arrière et côtés
+        const materials = [
+            facadeMaterial,  // Face avant (façade)
+            sideMaterial     // Côtés et face arrière
+        ];
         
         // Centrer le texte
         textGeometry.computeBoundingBox();
         const centerOffset = -0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
         
-        textMesh = new THREE.Mesh(textGeometry, meshMaterial);
+        textMesh = new THREE.Mesh(textGeometry, materials);
         textMesh.position.x = centerOffset;
         textMesh.position.y = 0;
-        textMesh.position.z = -4.75; // Collé sur le mur du fond (mur à z=-5)
+        textMesh.position.z = -4.75; // Collé sur le mur du fond
         textMesh.castShadow = true;
         textMesh.receiveShadow = false;
-        // Pas de rotation - les lettres restent fixes sur le mur
         
         scene.add(textMesh);
     });
@@ -1149,6 +1191,7 @@ window.addToCartFromModal = function() {
     const quantity = document.getElementById('modal-product-quantity').value;
     const imageUrl = document.getElementById('modal-product-text').getAttribute('data-image-url') || '/images/product-detail-01.jpg';
     const modeleName = document.getElementById('modal-product-text').getAttribute('data-model-name') || 'Produit personnalisé';
+    const modeleId = document.getElementById('modal-product-text').getAttribute('data-modele-id') || null;
     
     // Validation des dimensions
     if (!largeur || largeur < 1) {
@@ -1166,9 +1209,9 @@ window.addToCartFromModal = function() {
         largeur: largeur,
         hauteur: hauteur,
         quantity: quantity,
-        price: 10.00,
         imageUrl: imageUrl,
-        modeleName: modeleName
+        modeleName: modeleName,
+        modeleId: modeleId // Ajouter l'ID du modèle pour le calcul
     };
     
     // Ajouter les données spécifiques au mode
@@ -1195,6 +1238,10 @@ window.addToCartFromModal = function() {
         productData.logoRatio = logoRatio;
     }
     
+    // Ajouter les couleurs façade et côtés
+    productData.facadeColor = document.getElementById('modal-product-facade-color').value || '#2A2A2A';
+    productData.sideColor = document.getElementById('modal-product-side-color').value || '#E8E8E8';
+    
     // Envoyer au serveur
     fetch('/cart/add-custom', {
         method: 'POST',
@@ -1209,21 +1256,23 @@ window.addToCartFromModal = function() {
             // Fermer le modal
             closeModal();
             
-            // Mettre à jour le compteur du panier
-            if (typeof updateCartBadge === 'function') {
-                updateCartBadge();
-            }
+            // Afficher une notification avec le prix calculé
+            const message = `Produit ajouté au panier pour ${data.calculatedPrice ? data.calculatedPrice.toFixed(2) + '€' : 'un prix calculé'}`;
             
-            // Afficher une notification
             if (typeof swal !== 'undefined') {
                 swal({
                     title: "Produit ajouté!",
-                    text: "Le produit a été ajouté à votre panier",
+                    text: message,
                     icon: "success",
                     button: "OK"
+                }).then(() => {
+                    // Recharger la page pour mettre à jour le panier
+                    window.location.reload();
                 });
             } else {
-                alert('Produit ajouté au panier!');
+                alert(message);
+                // Recharger la page pour mettre à jour le panier
+                window.location.reload();
             }
         } else {
             alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
@@ -1290,8 +1339,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (textInput) {
         textInput.addEventListener('input', function() {
+            console.log('Texte saisi:', this.value);
             if (currentMode === 'text') {
                 calculateLargeur();
+                // Forcer la mise à jour de l'aperçu après un court délai
+                setTimeout(() => {
+                    updateTextPreview();
+                }, 100);
             }
         });
     }
@@ -1333,10 +1387,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Event listener pour la couleur du texte
-    const colorSelect = document.getElementById('modal-product-color');
-    if (colorSelect) {
-        colorSelect.addEventListener('change', function() {
+    // Event listeners pour les couleurs façade et côtés
+    const facadeColorSelect = document.getElementById('modal-product-facade-color');
+    if (facadeColorSelect) {
+        facadeColorSelect.addEventListener('change', function() {
+            updatePreview();
+        });
+    }
+    
+    const sideColorSelect = document.getElementById('modal-product-side-color');
+    if (sideColorSelect) {
+        sideColorSelect.addEventListener('change', function() {
             updatePreview();
         });
     }

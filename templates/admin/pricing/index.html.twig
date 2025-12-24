@@ -1,0 +1,110 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Prix{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>💰 Gestion des Prix</h1>
+    <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> Retour au Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Configuration des Prix par Produit</h5>
+    </div>
+    <div class="card-body">
+        {% if products|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom du Modèle</th>
+                            <th>Prix Actuel</th>
+                            <th>Type de Calcul</th>
+                            <th>Prix de Base</th>
+                            <th>Prix/Unité</th>
+                            <th>Unité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td><strong>{{ product.id }}</strong></td>
+                            <td>{{ product.modeleName ?? 'N/A' }}</td>
+                            <td>
+                                {% if product.useCustomPricing %}
+                                    <span class="badge bg-info">Calculé</span>
+                                {% else %}
+                                    {{ product.price|number_format(2) }}€
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.useCustomPricing %}
+                                    <span class="badge bg-success">Personnalisé</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Fixe</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.basePrice %}
+                                    {{ product.basePrice|number_format(2) }}€
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.pricePerUnit %}
+                                    {{ product.pricePerUnit|number_format(2) }}€
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.pricingUnit ?? 'cm' }}</td>
+                            <td>
+                                <a href="{{ path('admin_pricing_edit', {id: product.id}) }}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-edit"></i> Configurer
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i> Aucun produit trouvé.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">📋 Guide de Configuration</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Types de Calcul :</h6>
+                <ul>
+                    <li><strong>Prix Fixe :</strong> Prix unique pour tous les produits</li>
+                    <li><strong>Prix Personnalisé :</strong> Calcul basé sur les dimensions</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Unités Disponibles :</h6>
+                <ul>
+                    <li><strong>cm :</strong> Surface en centimètres carrés</li>
+                    <li><strong>m :</strong> Surface en mètres carrés</li>
+                    <li><strong>linear_cm :</strong> Longueur en centimètres</li>
+                    <li><strong>piece :</strong> Prix par pièce</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

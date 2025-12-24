@@ -1,0 +1,179 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Couleurs{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>🎨 Gestion des Couleurs</h1>
+    <div>
+        <a href="{{ path('admin_colors_new') }}" class="btn btn-primary">
+            <i class="zmdi zmdi-plus"></i> Ajouter une couleur
+        </a>
+        {% if colors|length == 0 %}
+        <a href="{{ path('admin_colors_init_default') }}" class="btn btn-success ms-2">
+            <i class="zmdi zmdi-refresh"></i> Initialiser couleurs par défaut
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Alertes stock faible -->
+{% if lowStockColors|length > 0 %}
+<div class="alert alert-warning mb-4">
+    <h5><i class="zmdi zmdi-alert-triangle"></i> Alertes Stock Faible</h5>
+    <div class="row">
+        {% for color in lowStockColors %}
+        <div class="col-md-3 mb-2">
+            <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: {{ color.hexCode }}; border: 1px solid #ccc; border-radius: 3px; margin-right: 8px;"></div>
+                <span>{{ color.displayName }} ({{ color.stock }} restant{{ color.stock > 1 ? 's' : '' }})</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Total couleurs</h5>
+                <p class="card-text display-6"><strong>{{ colors|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Actives</h5>
+                <p class="card-text display-6"><strong>{{ colors|filter(c => c.isActive)|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">En stock</h5>
+                <p class="card-text display-6"><strong>{{ colors|filter(c => c.stock > 0)|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Stock faible</h5>
+                <p class="card-text display-6"><strong style="color: #dc3545;">{{ lowStockColors|length }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des couleurs -->
+<div class="card">
+    <div class="card-body">
+        {% if colors|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Couleur</th>
+                            <th>Nom</th>
+                            <th>Code</th>
+                            <th>Type</th>
+                            <th>Stock</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for color in colors %}
+                        <tr class="{{ not color.isActive ? 'table-secondary' : (color.isLowStock ? 'table-warning' : '') }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div style="width: 30px; height: 30px; background-color: {{ color.hexCode }}; border: 2px solid #ddd; border-radius: 6px; margin-right: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                    <span style="font-size: 18px;">{{ color.emoji }}</span>
+                                </div>
+                            </td>
+                            <td><strong>{{ color.name }}</strong></td>
+                            <td>
+                                <code>{{ color.hexCode }}</code>
+                            </td>
+                            <td>
+                                {% if color.type == 'both' %}
+                                    <span class="badge bg-primary">Façade + Côtés</span>
+                                {% elseif color.type == 'facade' %}
+                                    <span class="badge bg-info">Façade uniquement</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Côtés uniquement</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2 {{ color.isLowStock ? 'text-warning fw-bold' : '' }}">
+                                        {{ color.stock }}
+                                    </span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-success btn-sm" onclick="updateStock({{ color.id }}, 'add', 1)">+</button>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="updateStock({{ color.id }}, 'remove', 1)">-</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <form method="post" action="{{ path('admin_colors_toggle', {id: color.id}) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm {{ color.isActive ? 'btn-success' : 'btn-secondary' }}">
+                                        {{ color.isActive ? 'Actif' : 'Inactif' }}
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_colors_edit', {id: color.id}) }}" class="btn btn-sm btn-primary">
+                                    <i class="zmdi zmdi-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="zmdi zmdi-palette fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucune couleur configurée.</p>
+                <a href="{{ path('admin_colors_init_default') }}" class="btn btn-success">
+                    <i class="zmdi zmdi-refresh"></i> Initialiser couleurs par défaut
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function updateStock(colorId, action, quantity) {
+            const formData = new FormData();
+            formData.append('action', action);
+            formData.append('quantity', quantity);
+
+            fetch(`/admin/colors/${colorId}/stock`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Recharger pour voir les changements
+                } else {
+                    alert('Erreur lors de la mise à jour du stock');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur réseau');
+            });
+        }
+    </script>
+{% endblock %}

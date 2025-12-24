@@ -55,11 +55,39 @@
                             
                             <!-- Coordonnées du produit (gauche) -->
                             <div style="flex: 2;">
-                                <h6 class="mtext-105 cl2 p-b-5">{{ item.product.text }}</h6>
-                                <p class="stext-102 cl6">
-                                    Dimensions: {{ item.product.largeur }}cm × {{ item.product.hauteur }}cm<br>
-                                    Police: {{ item.product.typeEcriture }}
-                                </p>
+                                {% if item.product.isLogoMode %}
+                                    <h6 class="mtext-105 cl2 p-b-5">
+                                        <i class="zmdi zmdi-image m-r-5"></i>Logo personnalisé
+                                        {% if item.product.logoFileName %}
+                                            <small class="stext-102 cl6">({{ item.product.logoFileName }})</small>
+                                        {% endif %}
+                                    </h6>
+                                    <p class="stext-102 cl6">
+                                        Dimensions: {{ item.product.largeur }}cm × {{ item.product.hauteur }}cm<br>
+                                        Ratio: {{ item.product.logoRatio ? (item.product.logoRatio|number_format(2)) : 'N/A' }}
+                                    </p>
+                                {% else %}
+                                    <h6 class="mtext-105 cl2 p-b-5">{{ item.product.text }}</h6>
+                                    <p class="stext-102 cl6">
+                                        Dimensions: {{ item.product.largeur }}cm × {{ item.product.hauteur }}cm<br>
+                                        Police: {{ item.product.typeEcriture }}
+                                    </p>
+                                {% endif %}
+                                
+                                <!-- Affichage des couleurs -->
+                                <div style="margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 6px;">
+                                    <small style="color: #666; font-weight: 600;">Couleurs choisies:</small>
+                                    <div style="display: flex; gap: 12px; margin-top: 6px;">
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <div style="width: 20px; height: 20px; background-color: {{ item.product.facadeColor|default('#2A2A2A') }}; border: 2px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                            <small style="font-weight: 500;">Façade</small>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <div style="width: 20px; height: 20px; background-color: {{ item.product.sideColor|default('#E8E8E8') }}; border: 2px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                            <small style="font-weight: 500;">Côtés</small>
+                                        </div>
+                                    </div>
+                                </div>
                                 {% if item.product.modeleName %}
                                 <p class="stext-102 cl5 p-t-5">
                                     <strong>Type: {{ item.product.modeleName }}</strong>
@@ -70,11 +98,11 @@
                                 <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
                                     <span class="stext-102 cl6">Quantité:</span>
                                     <div class="wrap-num-product flex-w" style="display: inline-flex;">
-                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity - 1 }})">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity('{{ item.id }}', '{{ item.quantity - 1 }}')">
                                             <i class="fs-16 zmdi zmdi-minus"></i>
                                         </div>
-                                        <input class="mtext-104 cl3 txt-center num-product" type="number" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.id }}, this.value)" style="width: 50px;">
-                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity({{ item.id }}, {{ item.quantity + 1 }})">
+                                        <input class="mtext-104 cl3 txt-center num-product" type="number" value="{{ item.quantity }}" min="1" onchange="updateQuantity('{{ item.id }}', this.value)" style="width: 50px;">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateQuantity('{{ item.id }}', '{{ item.quantity + 1 }}')">
                                             <i class="fs-16 zmdi zmdi-plus"></i>
                                         </div>
                                     </div>
@@ -83,7 +111,15 @@
                             
                             <!-- Image du produit (droite) -->
                             <div style="flex: 1; text-align: center;">
-                                <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.modeleName ?: 'Produit' }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                {% if item.product.isLogoMode and item.product.logoData %}
+                                    <!-- Afficher le logo uploadé - AGRANDI -->
+                                    <div style="width: 150px; height: 150px; border: 2px solid #007bff; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto;">
+                                        <img src="{{ item.product.logoData }}" alt="Logo personnalisé" style="max-width: 130px; max-height: 130px; object-fit: contain;">
+                                    </div>
+                                {% else %}
+                                    <!-- Afficher l'image du modèle -->
+                                    <img src="{{ asset(item.product.imageUrl ?: 'images/product-detail-01.jpg') }}" alt="{{ item.product.modeleName ?: 'Produit' }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                {% endif %}
                             </div>
                             
                             <!-- Prix et actions (fin) -->
@@ -96,7 +132,7 @@
                                     <p class="stext-102 cl6" style="margin-bottom: 5px;">Total</p>
                                     <p class="mtext-110" style="color: #2F4E9B; font-weight: 700; font-size: 20px;">{{ item.subtotal|number_format(2) }}€</p>
                                 </div>
-                                <button class="how-itemcart1-delete hov-cl1 trans-04" onclick="removeFromCart({{ item.id }})" style="margin-top: 10px; background: #DADDEB; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer;">
+                                <button class="how-itemcart1-delete hov-cl1 trans-04" onclick="removeFromCart('{{ item.id }}')" style="margin-top: 10px; background: #DADDEB; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer;">
                                     <i class="zmdi zmdi-delete" style="color: #0F1A3A;"></i> Supprimer
                                 </button>
                             </div>
@@ -162,8 +198,8 @@
                             </div>
                         </div>
 
-                        <a href="{{ path('customer_identify') }}" class="stext-101 cl0 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="text-decoration: none; display: flex; width: 100%; justify-content: center; align-items: center; padding: 15px; border-radius: 8px;">
-                            <i class="zmdi zmdi-card" style="margin-right: 8px;"></i> Payer maintenant
+                        <a href="{{ path('app_cart_checkout') }}" class="stext-101 cl0 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="text-decoration: none; display: flex; width: 100%; justify-content: center; align-items: center; padding: 15px; border-radius: 8px;">
+                            <i class="zmdi zmdi-card" style="margin-right: 8px;"></i> Finaliser la commande
                         </a>
                     </div>
                 </div>

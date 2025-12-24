@@ -31,6 +31,13 @@ class Modele
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'modeles')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $formuleCalcul = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -105,6 +112,28 @@ class Modele
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+        return $this;
+    }
+
+    public function getFormuleCalcul(): ?string
+    {
+        return $this->formuleCalcul;
+    }
+
+    public function setFormuleCalcul(?string $formuleCalcul): static
+    {
+        $this->formuleCalcul = $formuleCalcul;
         return $this;
     }
 }

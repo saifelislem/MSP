@@ -76,7 +76,15 @@
                     </div>
                     
                     <div class="flex-w flex-c-m">
-                        <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-r-10">
+                        <a href="{{ path('invoice_download', {id: order.id}) }}" class="flex-c-m stext-101 cl0 size-116 bg1 bor14 hov-btn1 p-lr-15 trans-04 pointer m-r-10" style="background-color: #28a745;">
+                            <i class="zmdi zmdi-download m-r-5"></i> Télécharger la facture PDF
+                        </a>
+                        
+                        <a href="{{ path('invoice_view', {id: order.id}) }}" class="flex-c-m stext-101 cl0 size-116 bg1 bor14 hov-btn1 p-lr-15 trans-04 pointer m-r-10" style="background-color: #17a2b8;" target="_blank">
+                            <i class="zmdi zmdi-eye m-r-5"></i> Voir la facture
+                        </a>
+                        
+                        <a href="{{ path('app_home') }}" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
                             <i class="zmdi zmdi-home m-r-5"></i> Retour à l'accueil
                         </a>
                     </div>

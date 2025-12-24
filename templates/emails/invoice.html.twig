@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture - {{ order.orderNumber }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2F4E9B;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2F4E9B;
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+        .order-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .order-info h2 {
+            color: #2F4E9B;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th {
+            background-color: #2F4E9B;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        .logo-preview {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+        .logo-preview img {
+            max-width: 50px;
+            max-height: 50px;
+            object-fit: contain;
+        }
+        .total-section {
+            background-color: #2F4E9B;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .total-section h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-completed {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>✅ Paiement Confirmé</h1>
+            <p>Merci pour votre commande !</p>
+        </div>
+
+        <p>Bonjour <strong>{{ customerName }}</strong>,</p>
+        
+        <p>Nous avons bien reçu votre paiement. Voici le récapitulatif de votre commande :</p>
+
+        <div class="order-info">
+            <h2>📋 Informations de commande</h2>
+            <div class="info-row">
+                <span class="info-label">Numéro de commande:</span>
+                <span><strong>{{ order.orderNumber }}</strong></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Date:</span>
+                <span>{{ order.createdAt|date('d/m/Y à H:i') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Statut:</span>
+                <span>
+                    <span class="status-badge status-{{ order.status }}">
+                        {{ order.statusLabel }}
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <h3 style="color: #2F4E9B; margin-top: 30px;">📦 Articles commandés</h3>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Détails</th>
+                    <th style="text-align: right;">Prix</th>
+                    <th style="text-align: center;">Qté</th>
+                    <th style="text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderItems %}
+                <tr>
+                    <td>
+                        {% if item.product.isLogoMode %}
+                            <strong>🖼️ Logo personnalisé</strong>
+                        {% else %}
+                            <strong>{{ item.product.text }}</strong>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ item.product.largeur }}×{{ item.product.hauteur }}cm
+                        {% if not item.product.isLogoMode %}
+                            <br><small style="color: #666;">{{ item.product.typeEcriture }}</small>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">{{ item.price|number_format(2) }}€</td>
+                    <td style="text-align: center;">{{ item.quantity }}</td>
+                    <td style="text-align: right;"><strong>{{ item.subtotal|number_format(2) }}€</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <h3>Total: {{ order.total|number_format(2) }}€</h3>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="font-size: 16px; color: #28a745; font-weight: bold;">
+                ✓ Paiement effectué avec succès
+            </p>
+            <p>Nous allons traiter votre commande dans les plus brefs délais.</p>
+            
+            <a href="{{ url('invoice_download', {id: order.id}) }}" class="button" style="background-color: #28a745; margin-top: 20px;">
+                📄 Télécharger la facture PDF
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Enseignes Personnalisées</strong></p>
+            <p>Pour toute question, contactez-nous à <a href="mailto:contact@enseignes.com">contact@enseignes.com</a></p>
+            <p style="font-size: 12px; color: #999; margin-top: 15px;">
+                Cet email a été envoyé automatiquement, merci de ne pas y répondre directement.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

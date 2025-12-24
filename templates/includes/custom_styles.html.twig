@@ -1,0 +1,147 @@
+<!-- CSS personnalisé généré depuis les paramètres admin -->
+<style>
+:root {
+    --primary-color: {{ site_settings.primary_color ?? '#2F4E9B' }};
+    --secondary-color: {{ site_settings.secondary_color ?? '#8A92AD' }};
+    --accent-color: {{ site_settings.accent_color ?? '#DADDEB' }};
+}
+
+/* Couleurs principales */
+.cl2, .mtext-105.cl2, .ltext-109.cl2, .mtext-110.cl2 {
+    color: var(--primary-color) !important;
+}
+
+/* Boutons principaux */
+.btn-primary, .bg3, .flex-c-m.bg3 {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover, .bg3:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 85%, black) !important;
+    border-color: color-mix(in srgb, var(--primary-color) 85%, black) !important;
+}
+
+/* Boutons secondaires */
+.btn-secondary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+}
+
+/* Bordures et accents */
+.bor13, .bor14 {
+    border-color: var(--accent-color) !important;
+}
+
+/* Header */
+.header-v4 {
+    background-color: white !important;
+}
+
+.logo span:first-child {
+    color: var(--primary-color) !important;
+}
+
+.logo span:last-child {
+    color: var(--secondary-color) !important;
+}
+
+/* Navigation */
+.main-menu .nav-link {
+    color: #222 !important;
+}
+
+.main-menu .nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Icônes du header */
+.icon-header-item {
+    color: #222 !important;
+}
+
+.icon-header-item:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Cartes et éléments */
+.card {
+    border-color: var(--accent-color) !important;
+}
+
+/* Formulaires */
+.form-control:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-color) 25%, transparent) !important;
+}
+
+/* Badges de statut */
+.badge.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+/* Liens */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: color-mix(in srgb, var(--primary-color) 85%, black);
+}
+
+/* Personnalisation spécifique pour les éléments du thème */
+.hov-cl1:hover {
+    color: var(--primary-color) !important;
+}
+
+.cl8 {
+    color: var(--secondary-color) !important;
+}
+
+/* Boutons de pagination et navigation */
+.page-link {
+    color: var(--primary-color);
+}
+
+.page-link:hover {
+    color: color-mix(in srgb, var(--primary-color) 85%, black);
+    background-color: color-mix(in srgb, var(--primary-color) 10%, white);
+    border-color: var(--primary-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Alertes personnalisées */
+.alert-primary {
+    background-color: color-mix(in srgb, var(--primary-color) 10%, white);
+    border-color: var(--primary-color);
+    color: color-mix(in srgb, var(--primary-color) 85%, black);
+}
+
+/* Indicateurs de progression */
+.progress-bar {
+    background-color: var(--primary-color) !important;
+}
+
+/* Éléments de navigation active */
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color) !important;
+}
+
+/* Personnalisation des éléments spécifiques au thème */
+.size-119.bg8 {
+    background-color: var(--accent-color) !important;
+}
+
+.bor12 {
+    border-color: var(--accent-color) !important;
+}
+</style>
+
+<!-- Inclusion du CSS généré si disponible -->
+{% if asset_exists('css/custom-generated.css') %}
+<link rel="stylesheet" type="text/css" href="{{ asset('css/custom-generated.css') }}">
+{% endif %}

@@ -16,6 +16,8 @@ class ModeleRepository extends ServiceEntityRepository
     public function findAllActifs(): array
     {
         return $this->createQueryBuilder('m')
+            ->leftJoin('m.category', 'c')
+            ->addSelect('c')
             ->andWhere('m.actif = :actif')
             ->setParameter('actif', true)
             ->orderBy('m.nom', 'ASC')
@@ -26,6 +28,8 @@ class ModeleRepository extends ServiceEntityRepository
     public function findAllForAdmin(): array
     {
         return $this->createQueryBuilder('m')
+            ->leftJoin('m.category', 'c')
+            ->addSelect('c')
             ->orderBy('m.createdAt', 'DESC')
             ->getQuery()
             ->getResult();

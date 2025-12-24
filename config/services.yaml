@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.email.from: 'saifbenyoussef2003@gmail.com'
+    app.email.from_name: 'Enseignes Personnalisées'
+    app.email.admin: 'saifbenyoussef2003@gmail.com'
 
 services:
     # default configuration for services in *this* file
@@ -15,12 +18,27 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
-    # Stripe Payment Service
+    
+    # Configuration du service Email
+    App\Service\EmailService:
+        arguments:
+            $fromEmail: '%app.email.from%'
+            $fromName: '%app.email.from_name%'
+    
+    # Configuration du service Stripe
     App\Service\StripePaymentService:
         arguments:
             $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
             $stripePublicKey: '%env(STRIPE_PUBLIC_KEY)%'
+    
+    # Listener pour les paramètres du site
+    App\EventListener\SiteSettingsListener:
+        tags:
+            - { name: kernel.event_subscriber }

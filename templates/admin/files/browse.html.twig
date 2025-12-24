@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sélectionner un Fichier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .file-item {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .file-item.selected {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .file-thumbnail {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover,
+        .upload-area.dragover {
+            background-color: #e3f2fd;
+            border-color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-3">
+        <!-- Barre d'outils -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">
+                <i class="fa fa-folder-open"></i> 
+                Sélectionner un fichier - {{ category|title }}
+            </h5>
+            <div>
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    <i class="fa fa-upload"></i> Nouveau
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="window.close()">
+                    <i class="fa fa-times"></i> Fermer
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone d'upload rapide -->
+        <div class="upload-area mb-4" id="quickUpload">
+            <i class="fa fa-cloud-upload fa-2x text-primary mb-2"></i>
+            <p class="mb-1">Glissez un fichier ici pour l'uploader rapidement</p>
+            <small class="text-muted">ou cliquez pour parcourir</small>
+            <input type="file" id="quickFileInput" style="display: none;" accept="image/*">
+        </div>
+
+        <!-- Grille de fichiers -->
+        <div class="row" id="filesGrid">
+            <!-- Les fichiers seront chargés ici -->
+        </div>
+
+        <!-- Message si aucun fichier -->
+        <div id="noFiles" class="text-center text-muted py-5" style="display: none;">
+            <i class="fa fa-folder-open fa-3x mb-3"></i>
+            <p>Aucun fichier dans cette catégorie</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="fa fa-upload"></i> Uploader le premier fichier
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal d'upload -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-upload"></i> Uploader un Fichier
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Fichier</label>
+                            <input type="file" class="form-control" id="fileInput" accept="image/*" required>
+                            <small class="text-muted">Formats: JPG, PNG, GIF, WebP, SVG (max 5MB)</small>
+                        </div>
+                        <div id="uploadPreview" class="mb-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="uploadBtn">
+                        <i class="fa fa-upload"></i> Uploader
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const category = '{{ category }}';
+        const callback = '{{ callback }}';
+        let selectedFile = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFiles();
+            setupUpload();
+            setupQuickUpload();
+        });
+
+        // Charger les fichiers
+        function loadFiles() {
+            fetch(`/admin/files/api/list?category=${category}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayFiles(data.files || []);
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+        }
+
+        // Afficher les fichiers
+        function displayFiles(files) {
+            const grid = document.getElementById('filesGrid');
+            const noFiles = document.getElementById('noFiles');
+            
+            if (files.length === 0) {
+                grid.style.display = 'none';
+                noFiles.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'block';
+            noFiles.style.display = 'none';
+            grid.innerHTML = '';
+
+            files.forEach(file => {
+                const col = document.createElement('div');
+                col.className = 'col-md-2 col-sm-3 col-4 mb-3';
+                
+                col.innerHTML = `
+                    <div class="file-item" data-path="${file.path}">
+                        <img src="${file.path}" alt="${file.name}" class="file-thumbnail mb-2">
+                        <div class="text-center">
+                            <small class="d-block text-truncate" title="${file.name}">${file.name}</small>
+                            <small class="text-muted">${formatFileSize(file.size)}</small>
+                        </div>
+                    </div>
+                `;
+                
+                // Événement de sélection
+                col.addEventListener('click', () => selectFile(file.path, col));
+                
+                // Double-clic pour sélectionner et fermer
+                col.addEventListener('dblclick', () => {
+                    selectFile(file.path, col);
+                    confirmSelection();
+                });
+                
+                grid.appendChild(col);
+            });
+        }
+
+        // Sélectionner un fichier
+        function selectFile(path, element) {
+            // Désélectionner les autres
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Sélectionner le fichier actuel
+            element.querySelector('.file-item').classList.add('selected');
+            selectedFile = path;
+            
+            // Confirmer automatiquement la sélection
+            confirmSelection();
+        }
+
+        // Confirmer la sélection
+        function confirmSelection() {
+            if (selectedFile && callback) {
+                // Appeler la fonction callback dans la fenêtre parent
+                if (window.opener && window.opener[callback]) {
+                    window.opener[callback](selectedFile);
+                    window.close();
+                } else if (parent && parent[callback]) {
+                    parent[callback](selectedFile);
+                    if (parent.bootstrap && parent.bootstrap.Modal) {
+                        // Fermer le modal si on est dans un iframe
+                        const modal = parent.document.querySelector('.modal.show');
+                        if (modal) {
+                            parent.bootstrap.Modal.getInstance(modal).hide();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Configuration de l'upload
+        function setupUpload() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fileInput');
+            
+            fileInput.addEventListener('change', showUploadPreview);
+            uploadBtn.addEventListener('click', uploadFile);
+        }
+
+        // Configuration de l'upload rapide
+        function setupQuickUpload() {
+            const quickUpload = document.getElementById('quickUpload');
+            const quickFileInput = document.getElementById('quickFileInput');
+            
+            quickUpload.addEventListener('click', () => quickFileInput.click());
+            quickFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    uploadFileQuick(e.target.files[0]);
+                }
+            });
+            
+            // Drag & Drop
+            quickUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                quickUpload.classList.add('dragover');
+            });
+            
+            quickUpload.addEventListener('dragleave', () => {
+                quickUpload.classList.remove('dragover');
+            });
+            
+            quickUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                quickUpload.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    uploadFileQuick(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        // Aperçu de l'upload
+        function showUploadPreview() {
+            const fileInput = document.getElementById('fileInput');
+            const preview = document.getElementById('uploadPreview');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    preview.innerHTML = `
+                        <div class="text-center">
+                            <img src="${e.target.result}" style="max-width: 200px; max-height: 150px;" class="rounded">
+                            <p class="mt-2 mb-0">${file.name}</p>
+                            <small class="text-muted">${formatFileSize(file.size)}</small>
+                        </div>
+                    `;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Upload de fichier
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (fileInput.files.length === 0) {
+                alert('Veuillez sélectionner un fichier');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('category', category);
+            
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Upload...';
+            
+            fetch('/admin/files/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                    loadFiles();
+                    
+                    // Sélectionner automatiquement le fichier uploadé
+                    setTimeout(() => {
+                        if (callback) {
+                            confirmSelection();
+                        }
+                    }, 500);
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Erreur lors de l\'upload: ' + error.message);
+            })
+            .finally(() => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fa fa-upload"></i> Uploader';
+            });
+        }
+
+        // Upload rapide
+        function uploadFileQuick(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('category', category);
+            
+            const quickUpload = document.getElementById('quickUpload');
+            const originalContent = quickUpload.innerHTML;
+            
+            quickUpload.innerHTML = `
+                <i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i>
+                <p class="mb-0">Upload en cours...</p>
+            `;
+            
+            fetch('/admin/files/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadFiles();
+                    selectedFile = data.path;
+                    
+                    // Auto-sélection après upload
+                    setTimeout(() => {
+                        if (callback) {
+                            confirmSelection();
+                        }
+                    }, 500);
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Erreur lors de l\'upload: ' + error.message);
+            })
+            .finally(() => {
+                quickUpload.innerHTML = originalContent;
+            });
+        }
+
+        // Utilitaire pour formater la taille des fichiers
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

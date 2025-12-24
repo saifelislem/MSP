@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Apparence du Site - Administration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .admin-sidebar {
+            background: #2c3e50;
+            min-height: 100vh;
+            color: white;
+        }
+        .admin-sidebar .nav-link {
+            color: #bdc3c7;
+            padding: 12px 20px;
+        }
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link.active {
+            background: #34495e;
+            color: white;
+        }
+        .admin-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .color-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .color-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .preview-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .website-preview {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+        .preview-header {
+            padding: 15px 20px;
+            background: var(--primary-color, #2F4E9B);
+            color: white;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        .preview-content {
+            padding: 20px;
+        }
+        .btn-preview {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Admin -->
+        <div class="col-md-3 col-lg-2 admin-sidebar">
+            <div class="p-3">
+                <h4><i class="bi bi-gear-fill"></i> Administration</h4>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{{ path('admin_settings_index') }}">
+                    <i class="bi bi-house-gear"></i> Vue d'ensemble
+                </a>
+                <a class="nav-link active" href="{{ path('admin_settings_appearance') }}">
+                    <i class="bi bi-palette"></i> Apparence
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_colors') }}">
+                    <i class="bi bi-paint-bucket"></i> Couleurs
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_content') }}">
+                    <i class="bi bi-file-text"></i> Contenu
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_shop') }}">
+                    <i class="bi bi-shop"></i> Boutique
+                </a>
+                <hr class="text-light">
+                <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a class="nav-link" href="{{ path('app_home') }}" target="_blank">
+                    <i class="bi bi-eye"></i> Voir le site
+                </a>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="col-md-9 col-lg-10 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-palette text-primary"></i> Apparence du Site</h1>
+                <a href="{{ path('app_home') }}" class="btn btn-outline-primary" target="_blank">
+                    <i class="bi bi-eye"></i> Voir le site
+                </a>
+            </div>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <form method="post" action="{{ path('admin_settings_update') }}">
+                <!-- Palette de couleurs principales -->
+                <div class="preview-section">
+                    <h3><i class="bi bi-palette"></i> Couleurs Principales</h3>
+                    <div class="color-palette">
+                        {% for setting in colorSettings %}
+                            <div class="color-item">
+                                <div class="color-circle" style="background-color: {{ setting.settingValue }};"></div>
+                                <h6>{{ setting.description }}</h6>
+                                <input type="color" 
+                                       class="form-control form-control-color mx-auto" 
+                                       name="{{ setting.settingKey }}" 
+                                       value="{{ setting.settingValue }}"
+                                       onchange="updateColorPreview('{{ setting.settingKey }}', this.value)"
+                                       style="width: 60px;">
+                                <small class="text-muted d-block mt-2">{{ setting.settingValue }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Couleurs des boutons -->
+                <div class="preview-section">
+                    <h3><i class="bi bi-mouse"></i> Couleurs des Boutons</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="color-palette">
+                                {% for setting in buttonSettings %}
+                                    <div class="color-item">
+                                        <div class="color-circle" style="background-color: {{ setting.settingValue }};"></div>
+                                        <h6>{{ setting.description }}</h6>
+                                        <input type="color" 
+                                               class="form-control form-control-color mx-auto" 
+                                               name="{{ setting.settingKey }}" 
+                                               value="{{ setting.settingValue }}"
+                                               onchange="updateButtonPreview()"
+                                               style="width: 60px;">
+                                        <small class="text-muted d-block mt-2">{{ setting.settingValue }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Aperçu des boutons</h5>
+                            <div class="p-3 bg-light rounded">
+                                <button type="button" class="btn-preview" id="btn-primary-preview">Bouton Principal</button><br>
+                                <button type="button" class="btn-preview" id="btn-secondary-preview">Bouton Secondaire</button><br>
+                                <button type="button" class="btn btn-success btn-sm">Succès</button>
+                                <button type="button" class="btn btn-warning btn-sm">Avertissement</button>
+                                <button type="button" class="btn btn-danger btn-sm">Danger</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="preview-section">
+                    <h3><i class="bi bi-image"></i> Images du Site</h3>
+                    <div class="row">
+                        {% for setting in imageSettings %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><strong>{{ setting.description }}</strong></label>
+                                <div class="input-group">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           name="{{ setting.settingKey }}" 
+                                           value="{{ setting.settingValue }}"
+                                           placeholder="URL de l'image"
+                                           readonly>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="selectImageFile('{{ setting.settingKey }}')">
+                                        <i class="bi bi-folder"></i> Parcourir
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" onclick="uploadImageFile('{{ setting.settingKey }}')">
+                                        <i class="bi bi-upload"></i> Uploader
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" onclick="previewImage('{{ setting.settingKey }}')">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">{{ setting.settingKey }}</small>
+                                
+                                <!-- Aperçu de l'image -->
+                                <div id="preview-{{ setting.settingKey }}" class="mt-2" style="display: {{ setting.settingValue ? 'block' : 'none' }};">
+                                    <img src="{{ setting.settingValue }}" alt="Aperçu" class="img-thumbnail" style="max-width: 150px; max-height: 100px;">
+                                    <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeImage('{{ setting.settingKey }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Aperçu du site -->
+                <div class="preview-section">
+                    <h3><i class="bi bi-display"></i> Aperçu du Site</h3>
+                    <div class="website-preview">
+                        <div class="preview-header" id="preview-header">
+                            <div>
+                                <strong id="site-title-preview">MS Lettres</strong>
+                                <small class="ms-2">Enseignes personnalisées</small>
+                            </div>
+                            <div>
+                                <i class="bi bi-cart"></i>
+                                <i class="bi bi-person-circle ms-2"></i>
+                            </div>
+                        </div>
+                        <div class="preview-content">
+                            <h4 style="color: var(--primary-color, #2F4E9B);">Bienvenue sur notre site</h4>
+                            <p>Découvrez nos enseignes personnalisées de qualité professionnelle.</p>
+                            <button type="button" class="btn-preview" id="cta-button-preview">Commander maintenant</button>
+                            <button type="button" class="btn-preview" id="secondary-button-preview">En savoir plus</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-lg"></i> Sauvegarder l'Apparence
+                    </button>
+                    <a href="{{ path('admin_settings_preview_css') }}" class="btn btn-info btn-lg ms-2" target="_blank">
+                        <i class="bi bi-code"></i> Voir le CSS généré
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/file-picker.js') }}"></script>
+<script>
+    // Variables pour stocker les couleurs actuelles
+    let currentColors = {
+        primary: '{{ colorSettings[0].settingValue ?? "#2F4E9B" }}',
+        secondary: '{{ colorSettings[1].settingValue ?? "#8A92AD" }}',
+        btnPrimaryBg: '{{ buttonSettings[0].settingValue ?? "#2F4E9B" }}',
+        btnPrimaryText: '{{ buttonSettings[1].settingValue ?? "#ffffff" }}',
+        btnSecondaryBg: '{{ buttonSettings[2].settingValue ?? "#8A92AD" }}',
+        btnSecondaryText: '{{ buttonSettings[3].settingValue ?? "#ffffff" }}'
+    };
+
+    // Mise à jour de l'aperçu des couleurs
+    function updateColorPreview(key, value) {
+        // Mettre à jour le cercle de couleur
+        const colorItem = document.querySelector(`input[name="${key}"]`).closest('.color-item');
+        const colorCircle = colorItem.querySelector('.color-circle');
+        const colorText = colorItem.querySelector('small');
+        
+        colorCircle.style.backgroundColor = value;
+        colorText.textContent = value;
+
+        // Mettre à jour les variables CSS
+        if (key === 'primary_color') {
+            currentColors.primary = value;
+            document.getElementById('preview-header').style.backgroundColor = value;
+            document.querySelectorAll('h4').forEach(h => h.style.color = value);
+        }
+
+        updateButtonPreview();
+    }
+
+    // Mise à jour de l'aperçu des boutons
+    function updateButtonPreview() {
+        const btnPrimaryBg = document.querySelector('input[name="btn_primary_bg"]')?.value || currentColors.btnPrimaryBg;
+        const btnPrimaryText = document.querySelector('input[name="btn_primary_text"]')?.value || currentColors.btnPrimaryText;
+        const btnSecondaryBg = document.querySelector('input[name="btn_secondary_bg"]')?.value || currentColors.btnSecondaryBg;
+        const btnSecondaryText = document.querySelector('input[name="btn_secondary_text"]')?.value || currentColors.btnSecondaryText;
+
+        // Bouton principal
+        const primaryBtn = document.getElementById('btn-primary-preview');
+        const ctaBtn = document.getElementById('cta-button-preview');
+        [primaryBtn, ctaBtn].forEach(btn => {
+            if (btn) {
+                btn.style.backgroundColor = btnPrimaryBg;
+                btn.style.color = btnPrimaryText;
+                btn.style.border = `1px solid ${btnPrimaryBg}`;
+            }
+        });
+
+        // Bouton secondaire
+        const secondaryBtn = document.getElementById('btn-secondary-preview');
+        const secBtn = document.getElementById('secondary-button-preview');
+        [secondaryBtn, secBtn].forEach(btn => {
+            if (btn) {
+                btn.style.backgroundColor = btnSecondaryBg;
+                btn.style.color = btnSecondaryText;
+                btn.style.border = `1px solid ${btnSecondaryBg}`;
+            }
+        });
+    }
+
+    // Aperçu d'image
+    function previewImage(key) {
+        const input = document.querySelector(`input[name="${key}"]`);
+        const url = input.value;
+        
+        if (url) {
+            window.open(url, '_blank');
+        } else {
+            alert('Veuillez entrer une URL d\'image');
+        }
+    }
+
+    // Initialiser l'aperçu
+    document.addEventListener('DOMContentLoaded', function() {
+        updateButtonPreview();
+    });
+
+    // Fonctions pour la gestion des images
+    function selectImageFile(settingKey) {
+        // Déterminer la catégorie selon le type d'image
+        let category = 'general';
+        if (settingKey.includes('logo')) {
+            category = 'logos';
+        } else if (settingKey.includes('banner')) {
+            category = 'general';
+        }
+
+        filePicker.open(function(path) {
+            const input = document.querySelector(`input[name="${settingKey}"]`);
+            input.value = path;
+            showImagePreview(settingKey, path);
+            
+            // Déclencher l'événement change pour la sauvegarde automatique
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }, category);
+    }
+
+    function uploadImageFile(settingKey) {
+        // Déterminer la catégorie selon le type d'image
+        let category = 'general';
+        if (settingKey.includes('logo')) {
+            category = 'logos';
+        } else if (settingKey.includes('banner')) {
+            category = 'general';
+        }
+
+        // Créer un input file temporaire
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.accept = 'image/*';
+        tempInput.style.display = 'none';
+        
+        tempInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadImageDirect(this.files[0], settingKey, category);
+            }
+        });
+        
+        document.body.appendChild(tempInput);
+        tempInput.click();
+        document.body.removeChild(tempInput);
+    }
+
+    function uploadImageDirect(file, settingKey, category) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', category);
+
+        // Afficher un indicateur de chargement
+        const uploadBtn = document.querySelector(`button[onclick="uploadImageFile('${settingKey}')"]`);
+        const originalContent = uploadBtn.innerHTML;
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="bi bi-hourglass"></i> Upload...';
+
+        fetch('/admin/files/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const input = document.querySelector(`input[name="${settingKey}"]`);
+                input.value = data.path;
+                showImagePreview(settingKey, data.path);
+                
+                // Déclencher l'événement change pour la sauvegarde automatique
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Afficher un message de succès
+                showNotification('Image uploadée avec succès !', 'success');
+            } else {
+                showNotification('Erreur lors de l\'upload: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Erreur lors de l\'upload: ' + error.message, 'error');
+        })
+        .finally(() => {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = originalContent;
+        });
+    }
+
+    function showImagePreview(settingKey, path) {
+        const preview = document.getElementById(`preview-${settingKey}`);
+        const img = preview.querySelector('img');
+        
+        if (path) {
+            img.src = path;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function removeImage(settingKey) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+            const input = document.querySelector(`input[name="${settingKey}"]`);
+            input.value = '';
+            showImagePreview(settingKey, '');
+            
+            // Déclencher l'événement change pour la sauvegarde automatique
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
+    function showNotification(message, type) {
+        // Créer une notification temporaire
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Supprimer automatiquement après 5 secondes
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+
+    // Initialiser les aperçus existants
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInputs = document.querySelectorAll('input[name*="image"], input[name*="logo"], input[name*="banner"], input[name*="favicon"]');
+        imageInputs.forEach(input => {
+            if (input.value) {
+                const settingKey = input.name;
+                showImagePreview(settingKey, input.value);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

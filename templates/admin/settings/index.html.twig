@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Paramètres du Site - Administration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .admin-sidebar {
+            background: #2c3e50;
+            min-height: 100vh;
+            color: white;
+        }
+        .admin-sidebar .nav-link {
+            color: #bdc3c7;
+            padding: 12px 20px;
+            border-radius: 0;
+        }
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link.active {
+            background: #34495e;
+            color: white;
+        }
+        .admin-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .setting-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .category-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            margin: -20px -20px 20px -20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Admin -->
+        <div class="col-md-3 col-lg-2 admin-sidebar">
+            <div class="p-3">
+                <h4><i class="bi bi-gear-fill"></i> Administration</h4>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="{{ path('admin_settings_index') }}">
+                    <i class="bi bi-house-gear"></i> Vue d'ensemble
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_appearance') }}">
+                    <i class="bi bi-palette"></i> Apparence
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_colors') }}">
+                    <i class="bi bi-paint-bucket"></i> Couleurs
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_content') }}">
+                    <i class="bi bi-file-text"></i> Contenu
+                </a>
+                <a class="nav-link" href="{{ path('admin_settings_shop') }}">
+                    <i class="bi bi-shop"></i> Boutique
+                </a>
+                <hr class="text-light">
+                <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a class="nav-link" href="{{ path('admin_orders_index') }}">
+                    <i class="bi bi-bag-check"></i> Commandes
+                </a>
+                <a class="nav-link" href="{{ path('app_home') }}" target="_blank">
+                    <i class="bi bi-eye"></i> Voir le site
+                </a>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="col-md-9 col-lg-10 admin-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-gear-fill text-primary"></i> Paramètres du Site</h1>
+                <div>
+                    <a href="{{ path('admin_settings_preview_css') }}" class="btn btn-info" target="_blank">
+                        <i class="bi bi-eye"></i> Aperçu CSS
+                    </a>
+                    <form method="post" action="{{ path('admin_settings_reset_defaults') }}" class="d-inline" 
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres ?')">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <form method="post" action="{{ path('admin_settings_update') }}">
+                <div class="row">
+                    {% for category in categories %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="setting-card">
+                                <div class="category-header">
+                                    <h5 class="mb-0">
+                                        {% if category == 'colors' %}
+                                            <i class="bi bi-palette"></i> Couleurs
+                                        {% elseif category == 'buttons' %}
+                                            <i class="bi bi-mouse"></i> Boutons
+                                        {% elseif category == 'content' %}
+                                            <i class="bi bi-file-text"></i> Contenu
+                                        {% elseif category == 'shop' %}
+                                            <i class="bi bi-shop"></i> Boutique
+                                        {% elseif category == 'display' %}
+                                            <i class="bi bi-display"></i> Affichage
+                                        {% elseif category == 'social' %}
+                                            <i class="bi bi-share"></i> Réseaux Sociaux
+                                        {% elseif category == 'images' %}
+                                            <i class="bi bi-image"></i> Images
+                                        {% elseif category == 'maintenance' %}
+                                            <i class="bi bi-tools"></i> Maintenance
+                                        {% else %}
+                                            <i class="bi bi-gear"></i> {{ category|title }}
+                                        {% endif %}
+                                    </h5>
+                                </div>
+
+                                {% for setting in settingsByCategory[category] %}
+                                    <div class="mb-3">
+                                        <label for="{{ setting.settingKey }}" class="form-label">
+                                            <strong>{{ setting.description ?: setting.settingKey|title }}</strong>
+                                        </label>
+                                        
+                                        {% if setting.type == 'color' %}
+                                            <div class="d-flex align-items-center">
+                                                <input type="color" 
+                                                       class="form-control form-control-color" 
+                                                       id="{{ setting.settingKey }}" 
+                                                       name="{{ setting.settingKey }}" 
+                                                       value="{{ setting.settingValue }}"
+                                                       style="width: 60px;">
+                                                <input type="text" 
+                                                       class="form-control ms-2" 
+                                                       value="{{ setting.settingValue }}" 
+                                                       readonly>
+                                            </div>
+                                        {% elseif setting.type == 'boolean' %}
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="{{ setting.settingKey }}" 
+                                                       name="{{ setting.settingKey }}" 
+                                                       value="true"
+                                                       {{ setting.formattedValue ? 'checked' : '' }}>
+                                                <input type="hidden" name="{{ setting.settingKey }}" value="false">
+                                            </div>
+                                        {% elseif setting.type == 'textarea' %}
+                                            <textarea class="form-control" 
+                                                      id="{{ setting.settingKey }}" 
+                                                      name="{{ setting.settingKey }}" 
+                                                      rows="3">{{ setting.settingValue }}</textarea>
+                                        {% elseif setting.type == 'number' %}
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="{{ setting.settingKey }}" 
+                                                   name="{{ setting.settingKey }}" 
+                                                   value="{{ setting.settingValue }}" 
+                                                   step="0.01">
+                                        {% else %}
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="{{ setting.settingKey }}" 
+                                                   name="{{ setting.settingKey }}" 
+                                                   value="{{ setting.settingValue }}">
+                                        {% endif %}
+                                        
+                                        {% if setting.settingKey %}
+                                            <small class="text-muted">Clé: {{ setting.settingKey }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-lg"></i> Sauvegarder tous les paramètres
+                    </button>
+                </div>
+            </form>
+
+            <!-- Aperçu en temps réel -->
+            <div class="setting-card mt-4">
+                <div class="category-header">
+                    <h5 class="mb-0"><i class="bi bi-eye"></i> Aperçu en Temps Réel</h5>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Boutons</h6>
+                        <button class="btn btn-primary me-2 mb-2">Bouton Principal</button>
+                        <button class="btn btn-secondary me-2 mb-2">Bouton Secondaire</button>
+                        <button class="btn btn-success me-2 mb-2">Succès</button>
+                        <button class="btn btn-warning me-2 mb-2">Avertissement</button>
+                        <button class="btn btn-danger me-2 mb-2">Danger</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Couleurs du thème</h6>
+                        <div class="d-flex flex-wrap">
+                            {% for setting in settingsByCategory['colors'] ?? [] %}
+                                <div class="me-3 mb-2">
+                                    <small>{{ setting.description }}</small><br>
+                                    <div class="color-preview" style="background-color: {{ setting.settingValue }};"></div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Mise à jour en temps réel des couleurs
+    document.querySelectorAll('input[type="color"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const textInput = this.nextElementSibling;
+            textInput.value = this.value;
+            
+            // Mise à jour de l'aperçu
+            updatePreview();
+        });
+    });
+
+    function updatePreview() {
+        // Mise à jour des boutons d'aperçu avec les nouvelles couleurs
+        const primaryColor = document.querySelector('input[name="primary_color"]')?.value || '#2F4E9B';
+        const secondaryColor = document.querySelector('input[name="secondary_color"]')?.value || '#8A92AD';
+        
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.style.backgroundColor = primaryColor;
+            btn.style.borderColor = primaryColor;
+        });
+        
+        document.querySelectorAll('.btn-secondary').forEach(btn => {
+            btn.style.backgroundColor = secondaryColor;
+            btn.style.borderColor = secondaryColor;
+        });
+    }
+
+    // Initialiser l'aperçu
+    updatePreview();
+</script>
+
+</body>
+</html>

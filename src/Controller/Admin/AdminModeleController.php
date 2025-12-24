@@ -24,15 +24,37 @@ class AdminModeleController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_modeles_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, \App\Service\FormulaCalculatorService $formulaCalculator): Response
     {
         if ($request->isMethod('POST')) {
+            $formuleCalcul = $request->request->get('formuleCalcul');
+            
+            // Valider la formule si elle est fournie
+            if (!empty($formuleCalcul) && !$formulaCalculator->validateFormula($formuleCalcul)) {
+                $this->addFlash('error', 'La formule de calcul est invalide. Vérifiez la syntaxe.');
+                $categories = $em->getRepository(\App\Entity\Category::class)->findBy([], ['ordre' => 'ASC', 'nom' => 'ASC']);
+                return $this->render('admin/modeles/new.html.twig', [
+                    'categories' => $categories,
+                    'formData' => $request->request->all()
+                ]);
+            }
+            
             $modele = new Modele();
             $modele->setNom($request->request->get('nom'));
             $modele->setDescription($request->request->get('description'));
             $modele->setImage($request->request->get('image'));
             $modele->setPrixBase((float)$request->request->get('prixBase'));
+            $modele->setFormuleCalcul($formuleCalcul);
             $modele->setActif($request->request->get('actif') === '1');
+
+            // Gérer la catégorie
+            $categoryId = $request->request->get('category_id');
+            if ($categoryId) {
+                $category = $em->getRepository(\App\Entity\Category::class)->find($categoryId);
+                if ($category) {
+                    $modele->setCategory($category);
+                }
+            }
 
             $em->persist($modele);
             $em->flush();
@@ -41,18 +63,43 @@ class AdminModeleController extends AbstractController
             return $this->redirectToRoute('admin_modeles_index');
         }
 
-        return $this->render('admin/modeles/new.html.twig');
+        $categories = $em->getRepository(\App\Entity\Category::class)->findBy([], ['ordre' => 'ASC', 'nom' => 'ASC']);
+        return $this->render('admin/modeles/new.html.twig', [
+            'categories' => $categories
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'admin_modeles_edit')]
-    public function edit(Modele $modele, Request $request, EntityManagerInterface $em): Response
+    public function edit(Modele $modele, Request $request, EntityManagerInterface $em, \App\Service\FormulaCalculatorService $formulaCalculator): Response
     {
         if ($request->isMethod('POST')) {
+            $formuleCalcul = $request->request->get('formuleCalcul');
+            
+            // Valider la formule si elle est fournie
+            if (!empty($formuleCalcul) && !$formulaCalculator->validateFormula($formuleCalcul)) {
+                $this->addFlash('error', 'La formule de calcul est invalide. Vérifiez la syntaxe.');
+                $categories = $em->getRepository(\App\Entity\Category::class)->findBy([], ['ordre' => 'ASC', 'nom' => 'ASC']);
+                return $this->render('admin/modeles/edit.html.twig', [
+                    'modele' => $modele,
+                    'categories' => $categories
+                ]);
+            }
+            
             $modele->setNom($request->request->get('nom'));
             $modele->setDescription($request->request->get('description'));
             $modele->setImage($request->request->get('image'));
             $modele->setPrixBase((float)$request->request->get('prixBase'));
+            $modele->setFormuleCalcul($formuleCalcul);
             $modele->setActif($request->request->get('actif') === '1');
+
+            // Gérer la catégorie
+            $categoryId = $request->request->get('category_id');
+            if ($categoryId) {
+                $category = $em->getRepository(\App\Entity\Category::class)->find($categoryId);
+                $modele->setCategory($category);
+            } else {
+                $modele->setCategory(null);
+            }
 
             $em->flush();
 
@@ -60,8 +107,10 @@ class AdminModeleController extends AbstractController
             return $this->redirectToRoute('admin_modeles_index');
         }
 
+        $categories = $em->getRepository(\App\Entity\Category::class)->findBy([], ['ordre' => 'ASC', 'nom' => 'ASC']);
         return $this->render('admin/modeles/edit.html.twig', [
             'modele' => $modele,
+            'categories' => $categories
         ]);
     }
 

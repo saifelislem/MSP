@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<title>{{ category.nom }} - MSP</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="{{ asset('images/icons/favicon.png') }}"/>
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('fonts/iconic/css/material-design-iconic-font.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/css-hamburgers/hamburgers.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/animsition/css/animsition.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/cart-sidebar.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/custom-theme.css') }}">
+	<style>
+		/* 5 colonnes sur grand écran */
+		@media (min-width: 992px) {
+			.col-lg-2-4 {
+				flex: 0 0 20%;
+				max-width: 20%;
+			}
+		}
+		/* 4 colonnes sur tablette */
+		@media (min-width: 768px) and (max-width: 991px) {
+			.col-lg-2-4 {
+				flex: 0 0 25%;
+				max-width: 25%;
+			}
+		}
+		/* 2 colonnes sur mobile */
+		@media (max-width: 767px) {
+			.col-lg-2-4 {
+				flex: 0 0 50%;
+				max-width: 50%;
+			}
+		}
+		
+		/* Afficher le bouton au survol */
+		.product-card:hover .personalize-btn {
+			opacity: 1 !important;
+		}
+		
+		/* Sur mobile, toujours afficher le bouton */
+		@media (max-width: 767px) {
+			.personalize-btn {
+				opacity: 1 !important;
+			}
+		}
+	</style>
+</head>
+<body class="animsition">
+	
+	<!-- Header -->
+	<header class="header-v3" style="background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+		<div class="container-menu-desktop trans-03">
+			<div class="wrap-menu-desktop" style="background: white;">
+				<nav class="limiter-menu-desktop p-l-45">
+					<a href="{{ path('app_home') }}" class="logo" style="text-decoration: none;">
+						<div style="display: flex; align-items: center; gap: 5px;">
+							<span style="color: #2F4E9B; font-size: 32px; font-weight: bold; letter-spacing: -2px;">MS</span>
+							<span style="color: #8A92AD; font-size: 20px; font-weight: 500;">Lettres</span>
+						</div>
+					</a>
+
+					<div class="menu-desktop">
+						<ul class="main-menu">
+							<li>
+								<a href="{{ path('app_home') }}" style="color: #222;">Accueil</a>
+							</li>
+						</ul>
+					</div>	
+
+					<div class="wrap-icon-header flex-w flex-r-m h-full">							
+						<div class="flex-c-m h-full p-r-25">
+							<div class="icon-header-item trans-04 p-lr-11 icon-header-noti js-show-sidebar" data-notify="{{ cartItemsCount }}" style="color: #222;">
+								<i class="zmdi zmdi-shopping-cart" style="font-size: 24px;"></i>
+							</div>
+						</div>
+						<a href="{{ path('customer_profile') }}" class="icon-header-item trans-04 p-lr-11" title="Mon Profil" style="color: #222;">
+							<i class="zmdi zmdi-account-circle" style="font-size: 24px;"></i>
+						</a>
+					</div>
+				</nav>
+			</div>	
+		</div>
+	</header>
+
+	<!-- Sidebar Panier -->
+	{% include 'includes/cart_sidebar.html.twig' %}
+
+	<!-- Section Produits -->
+	<section class="bg0 p-t-100 p-b-130">
+		<div class="container">
+			<div class="p-b-30" style="text-align: center;">
+				<h3 class="ltext-103 cl5" style="margin-bottom: 15px; text-align: center;">
+					{{ category.nom }}
+				</h3>
+				{% if category.description %}
+				<p class="stext-113 cl6" style="margin-top: 0; text-align: center;">
+					{{ category.description }}
+				</p>
+				{% endif %}
+			</div>
+
+			<div class="row p-t-40">
+				{% if modeles|length > 0 %}
+					{% for modele in modeles %}
+					<div class="col-sm-6 col-md-4 col-lg-2-4 p-b-35" style="flex: 0 0 20%; max-width: 20%;">
+						<div class="block2 product-card" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'">
+							<div class="block2-pic hov-img0" style="position: relative; overflow: hidden;">
+								<img src="{{ asset(modele.image) }}" alt="{{ modele.nom }}" style="width: 100%; height: 220px; object-fit: cover; transition: transform 0.3s;">
+
+								<button class="block2-btn stext-103 cl0 trans-04 js-show-modal1 personalize-btn" 
+										data-image="{{ asset(modele.image) }}"
+										data-name="{{ modele.nom }}"
+										data-supports-logo="{% if category.supportsLogo %}true{% else %}false{% endif %}"
+										onclick="openModalWithImage(this.dataset.image, this.dataset.name, this.dataset.supportsLogo === 'true')"
+										style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: #2F4E9B; border: none; color: white; font-weight: 500; box-shadow: 0 4px 15px rgba(47, 78, 155, 0.4); padding: 12px 25px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0; transition: opacity 0.3s ease;">
+									<i class="zmdi zmdi-edit"></i> Personnaliser
+								</button>
+							</div>
+
+							<div class="block2-txt flex-w flex-t p-t-20 p-b-20" style="background: white; text-align: center;">
+								<div class="block2-txt-child1 flex-col-l w-full" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+									<span class="stext-104 cl2" style="font-weight: 600; font-size: 16px; display: block; margin-bottom: 8px; text-align: center; color: #0F1A3A;">
+										{{ modele.nom }}
+									</span>
+									<span class="stext-102" style="font-size: 12px; display: block; margin-bottom: 4px; text-align: center; color: #8A92AD;">
+										à partir de
+									</span>
+									<span class="stext-102" style="color: #2F4E9B; font-weight: 700; font-size: 18px; text-align: center; display: block;">
+										{{ modele.prixBase|number_format(2) }}€
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				{% else %}
+					<div class="col-12 text-center p-t-50 p-b-50">
+						<i class="zmdi zmdi-inbox" style="font-size: 80px; color: #DADDEB;"></i>
+						<h4 class="mtext-109 cl6 p-t-20">Aucun produit dans cette catégorie</h4>
+						<a href="{{ path('app_home') }}" class="stext-102 cl6 hov-cl1 p-t-20" style="display: inline-block;">
+							<i class="zmdi zmdi-arrow-left m-r-5"></i> Retour à l'accueil
+						</a>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer>
+		{% include 'includes/footer.html.twig' %}
+	</footer>
+
+	<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+	<script src="{{ asset('vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+	<script src="{{ asset('vendor/animsition/js/animsition.min.js') }}"></script>
+	<script src="{{ asset('vendor/bootstrap/js/popper.js') }}"></script>
+	<script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
+	<script src="{{ asset('vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+	<script src="{{ asset('vendor/sweetalert/sweetalert.min.js') }}"></script>
+	<script src="{{ asset('js/main.js') }}"></script>
+	<script src="{{ asset('js/cart-functions.js') }}"></script>
+
+	<script>
+	// Ouvrir le modal avec l'image sélectionnée
+	function openModalWithImage(imageUrl, modeleName, supportsLogo = false) {
+		document.getElementById('modal-product-text').value = '';
+		document.getElementById('modal-product-largeur').value = '';
+		document.getElementById('modal-product-hauteur').value = '';
+		document.getElementById('modal-product-typeEcriture').value = 'Arial';
+		document.getElementById('modal-product-quantity').value = 1;
+		document.getElementById('modal-product-text').removeAttribute('data-product-id');
+		
+		document.getElementById('modal-product-text').setAttribute('data-image-url', imageUrl);
+		document.getElementById('modal-product-text').setAttribute('data-model-name', modeleName);
+		
+		const modalImage = document.querySelector('.js-modal1 .item-slick3 img');
+		if (modalImage) {
+			modalImage.src = imageUrl;
+			modalImage.alt = modeleName;
+		}
+		
+		const modalTitle = document.getElementById('modal-product-title');
+		if (modalTitle) {
+			modalTitle.textContent = modeleName;
+		}
+		
+		// Gérer l'affichage des onglets selon la configuration
+		configureModalTabs(supportsLogo);
+	}
+	
+	// Fonction pour configurer les onglets selon la catégorie
+	function configureModalTabs(supportsLogo) {
+		const tabButtons = document.querySelectorAll('.tab-btn');
+		const textContent = document.getElementById('text-content');
+		const logoContent = document.getElementById('logo-content');
+		const logoTab = document.querySelector('.tab-btn[data-tab="logo"]');
+		const textTab = document.querySelector('.tab-btn[data-tab="text"]');
+		const fontSection = document.getElementById('font-section');
+		const materialSection = document.getElementById('material-section');
+		
+		if (supportsLogo) {
+			// Afficher les deux onglets
+			if (logoTab) logoTab.style.display = 'block';
+			if (textTab) textTab.style.display = 'block';
+			
+			// Activer l'onglet texte par défaut
+			tabButtons.forEach(btn => {
+				btn.classList.remove('active');
+				btn.style.background = 'white';
+				btn.style.color = '#007bff';
+			});
+			
+			if (textTab) {
+				textTab.classList.add('active');
+				textTab.style.background = '#007bff';
+				textTab.style.color = 'white';
+			}
+			
+			// Afficher le contenu texte et les sections associées
+			if (textContent) textContent.style.display = 'block';
+			if (logoContent) logoContent.style.display = 'none';
+			if (fontSection) fontSection.style.display = 'flex';
+			if (materialSection) materialSection.style.display = 'flex';
+		} else {
+			// Masquer l'onglet logo, afficher seulement le texte
+			if (logoTab) logoTab.style.display = 'none';
+			if (textTab) {
+				textTab.style.display = 'block';
+				textTab.classList.add('active');
+				textTab.style.background = '#007bff';
+				textTab.style.color = 'white';
+			}
+			
+			// Afficher le contenu texte et toutes les sections
+			if (textContent) textContent.style.display = 'block';
+			if (logoContent) logoContent.style.display = 'none';
+			if (fontSection) fontSection.style.display = 'flex';
+			if (materialSection) materialSection.style.display = 'flex';
+		}
+		
+		// Mettre à jour l'aperçu après configuration
+		if (typeof updatePreview === 'function') {
+			updatePreview();
+		}
+	}
+
+
+
+	$('.js-pscroll').each(function(){
+		$(this).css('position','relative');
+		$(this).css('overflow','hidden');
+		var ps = new PerfectScrollbar(this, {
+			wheelSpeed: 1,
+			scrollingThreshold: 1000,
+			wheelPropagation: false,
+		});
+
+		$(window).on('resize', function(){
+			ps.update();
+		})
+	});
+	</script>
+
+	<!-- Modal Product -->
+	{% include 'includes/product_modal.html.twig' %}
+
+</body>
+</html>

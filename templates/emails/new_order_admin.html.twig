@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle commande - {{ order.orderNumber }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #2F4E9B 0%, #1a2d5f 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .alert {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .customer-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th {
+            background-color: #2F4E9B;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .total {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2F4E9B;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>🔔 Nouvelle Commande Reçue</h1>
+            <p style="margin: 5px 0 0 0;">{{ order.orderNumber }}</p>
+        </div>
+
+        <div class="alert">
+            <strong>⚠️ Action requise:</strong> Une nouvelle commande vient d'être passée et nécessite votre attention.
+        </div>
+
+        <div class="customer-info">
+            <h3 style="margin-top: 0; color: #2F4E9B;">👤 Informations Client</h3>
+            <p><strong>Nom:</strong> {{ order.customerName }}</p>
+            <p><strong>Email:</strong> <a href="mailto:{{ order.customerEmail }}">{{ order.customerEmail }}</a></p>
+            <p><strong>Téléphone:</strong> {{ order.customerPhone ?: 'Non renseigné' }}</p>
+            <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y à H:i') }}</p>
+        </div>
+
+        <h3 style="color: #2F4E9B;">📦 Articles commandés</h3>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Dimensions</th>
+                    <th>Prix</th>
+                    <th>Qté</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderItems %}
+                <tr>
+                    <td>
+                        {% if item.product.isLogoMode %}
+                            <strong>🖼️ Logo personnalisé</strong>
+                            {% if item.product.logoFileName %}
+                                <br><small>{{ item.product.logoFileName }}</small>
+                            {% endif %}
+                        {% else %}
+                            <strong>{{ item.product.text }}</strong>
+                            <br><small>{{ item.product.typeEcriture }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.product.largeur }}×{{ item.product.hauteur }}cm</td>
+                    <td>{{ item.price|number_format(2) }}€</td>
+                    <td>{{ item.quantity }}</td>
+                    <td><strong>{{ item.subtotal|number_format(2) }}€</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">
+            Total de la commande: {{ order.total|number_format(2) }}€
+        </div>
+
+        {% if order.notes %}
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
+            <h4 style="margin-top: 0; color: #2F4E9B;">📝 Notes</h4>
+            <p>{{ order.notes }}</p>
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url('admin_orders_show', {id: order.id}) }}" class="button">
+                Voir la commande dans l'admin
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; color: #666; font-size: 14px;">
+            <p>Email automatique - Système de gestion des commandes</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -6,6 +6,7 @@ use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -28,13 +29,18 @@ class Order
     #[ORM\Column]
     private ?float $total = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du client est obligatoire')]
     private ?string $customerName = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'email du client est obligatoire')]
+    #[Assert\Email(message: 'L\'email n\'est pas valide')]
     private ?string $customerEmail = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le téléphone du client est obligatoire')]
+    #[Assert\Regex(pattern: '/^[0-9\s\-\+\(\)\.]{10,}$/', message: 'Le numéro de téléphone n\'est pas valide')]
     private ?string $customerPhone = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -46,6 +52,14 @@ class Order
 
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $orderItems;
+
+    #[ORM\ManyToOne(targetEntity: Address::class, inversedBy: 'ordersAsBilling')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Address $billingAddress = null;
+
+    #[ORM\ManyToOne(targetEntity: Address::class, inversedBy: 'ordersAsShipping')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Address $shippingAddress = null;
 
     public function __construct()
     {
@@ -188,10 +202,33 @@ class Order
         return $this;
     }
 
+    public function getBillingAddress(): ?Address
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress(?Address $billingAddress): static
+    {
+        $this->billingAddress = $billingAddress;
+        return $this;
+    }
+
+    public function getShippingAddress(): ?Address
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress(?Address $shippingAddress): static
+    {
+        $this->shippingAddress = $shippingAddress;
+        return $this;
+    }
+
     public function getStatusLabel(): string
     {
         return match($this->status) {
             'pending' => 'En attente',
+            'paid' => 'Payée',
             'processing' => 'En cours',
             'completed' => 'Terminée',
             'cancelled' => 'Annulée',

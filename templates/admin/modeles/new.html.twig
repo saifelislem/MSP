@@ -22,14 +22,51 @@
             </div>
 
             <div class="mb-3">
-                <label for="image" class="form-label">Chemin de l'image *</label>
-                <input type="text" class="form-control" id="image" name="image" required placeholder="lettres/modele-1.jpg">
-                <small class="text-muted">Placez l'image dans le dossier public/lettres/</small>
+                <label for="image" class="form-label">Image du modèle *</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="image" name="image" required placeholder="Sélectionnez une image..." readonly>
+                    <button type="button" class="btn btn-outline-secondary" id="selectImageBtn">
+                        <i class="fa fa-folder-open"></i> Parcourir
+                    </button>
+                    <button type="button" class="btn btn-outline-success" id="uploadImageBtn">
+                        <i class="fa fa-upload"></i> Uploader
+                    </button>
+                </div>
+                <small class="text-muted">Sélectionnez une image depuis la galerie ou uploadez-en une nouvelle</small>
+                
+                <!-- Aperçu de l'image -->
+                <div id="imagePreview" class="mt-2" style="display: none;">
+                    <img id="previewImg" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                    <button type="button" class="btn btn-sm btn-danger ms-2" id="removeImageBtn">
+                        <i class="fa fa-times"></i> Supprimer
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
                 <label for="prixBase" class="form-label">Prix de base (€) *</label>
                 <input type="number" step="0.01" class="form-control" id="prixBase" name="prixBase" required placeholder="10.00">
+            </div>
+
+            <div class="mb-3">
+                <label for="formuleCalcul" class="form-label">Formule de calcul personnalisée</label>
+                <textarea class="form-control" id="formuleCalcul" name="formuleCalcul" rows="4" placeholder="Ex: (largeur * hauteur * 0.5) + prixBase&#10;Variables disponibles: largeur, hauteur, prixBase, quantite"></textarea>
+                <small class="text-muted">
+                    <strong>Variables disponibles:</strong> largeur, hauteur, prixBase, quantite<br>
+                    <strong>Exemple:</strong> (largeur * hauteur * 0.5) + prixBase<br>
+                    <strong>Laissez vide</strong> pour utiliser seulement le prix de base
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Catégorie</label>
+                <select class="form-select" id="category" name="category_id">
+                    <option value="">-- Aucune catégorie --</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.nom }}</option>
+                    {% endfor %}
+                </select>
+                <small class="text-muted">Associez ce modèle à une catégorie pour l'organiser</small>
             </div>
 
             <div class="mb-3 form-check">
@@ -48,4 +85,100 @@
         </form>
     </div>
 </div>
+
+{% block javascripts %}
+<script src="{{ asset('js/file-picker.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const selectImageBtn = document.getElementById('selectImageBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+
+    // Sélectionner une image existante
+    selectImageBtn.addEventListener('click', function() {
+        filePicker.open(function(path) {
+            imageInput.value = path;
+            showImagePreview(path);
+        }, 'models');
+    });
+
+    // Uploader une nouvelle image
+    uploadImageBtn.addEventListener('click', function() {
+        // Créer un input file temporaire
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.accept = 'image/*';
+        tempInput.style.display = 'none';
+        
+        tempInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadImage(this.files[0]);
+            }
+        });
+        
+        document.body.appendChild(tempInput);
+        tempInput.click();
+        document.body.removeChild(tempInput);
+    });
+
+    // Supprimer l'image sélectionnée
+    removeImageBtn.addEventListener('click', function() {
+        imageInput.value = '';
+        hideImagePreview();
+    });
+
+    // Fonction pour uploader une image
+    function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', 'models');
+
+        // Afficher un indicateur de chargement
+        uploadImageBtn.disabled = true;
+        uploadImageBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Upload...';
+
+        fetch('/admin/files/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                imageInput.value = data.path;
+                showImagePreview(data.path);
+            } else {
+                alert('Erreur lors de l\'upload: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de l\'upload: ' + error.message);
+        })
+        .finally(() => {
+            uploadImageBtn.disabled = false;
+            uploadImageBtn.innerHTML = '<i class="fa fa-upload"></i> Uploader';
+        });
+    }
+
+    // Afficher l'aperçu de l'image
+    function showImagePreview(path) {
+        previewImg.src = path;
+        imagePreview.style.display = 'block';
+    }
+
+    // Masquer l'aperçu de l'image
+    function hideImagePreview() {
+        imagePreview.style.display = 'none';
+        previewImg.src = '';
+    }
+
+    // Si une image est déjà sélectionnée, afficher l'aperçu
+    if (imageInput.value) {
+        showImagePreview(imageInput.value);
+    }
+});
+</script>
+{% endblock %}
 {% endblock %}

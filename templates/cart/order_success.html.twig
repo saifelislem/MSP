@@ -63,6 +63,38 @@
                                 <span class="badge bg-warning">{{ order.statusLabel }}</span>
                             </div>
                             
+                            {% if order.billingAddress %}
+                            <div class="p-t-15">
+                                <h6 class="stext-105 cl2 p-b-10">
+                                    <i class="zmdi zmdi-home m-r-5"></i>Adresse de facturation
+                                </h6>
+                                <p class="stext-102 cl6">
+                                    {{ order.billingAddress.name }}<br>
+                                    {% if order.billingAddress.company %}{{ order.billingAddress.company }}<br>{% endif %}
+                                    {{ order.billingAddress.street }}<br>
+                                    {% if order.billingAddress.additionalInfo %}{{ order.billingAddress.additionalInfo }}<br>{% endif %}
+                                    {{ order.billingAddress.postalCode }} {{ order.billingAddress.city }}<br>
+                                    {{ order.billingAddress.country }}
+                                </p>
+                            </div>
+                            {% endif %}
+
+                            {% if order.shippingAddress and order.shippingAddress.id != order.billingAddress.id %}
+                            <div class="p-t-15">
+                                <h6 class="stext-105 cl2 p-b-10">
+                                    <i class="zmdi zmdi-truck m-r-5"></i>Adresse de livraison
+                                </h6>
+                                <p class="stext-102 cl6">
+                                    {{ order.shippingAddress.name }}<br>
+                                    {% if order.shippingAddress.company %}{{ order.shippingAddress.company }}<br>{% endif %}
+                                    {{ order.shippingAddress.street }}<br>
+                                    {% if order.shippingAddress.additionalInfo %}{{ order.shippingAddress.additionalInfo }}<br>{% endif %}
+                                    {{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}<br>
+                                    {{ order.shippingAddress.country }}
+                                </p>
+                            </div>
+                            {% endif %}
+
                             {% if order.customerEmail %}
                             <div class="p-t-15">
                                 <p class="stext-102 cl6">

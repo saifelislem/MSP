@@ -1,0 +1,208 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouvelle Catégorie{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>➕ Nouvelle Catégorie</h1>
+    <a href="{{ path('admin_categories_index') }}" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom de la catégorie *</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required placeholder="Ex: LED Lumineux">
+                        <small class="text-muted">Le slug sera généré automatiquement</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Description de la catégorie..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Image de la catégorie</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="image" name="image" placeholder="Sélectionnez une image..." readonly>
+                            <button type="button" class="btn btn-outline-secondary" id="selectImageBtn">
+                                <i class="fa fa-folder-open"></i> Parcourir
+                            </button>
+                            <button type="button" class="btn btn-outline-success" id="uploadImageBtn">
+                                <i class="fa fa-upload"></i> Uploader
+                            </button>
+                        </div>
+                        <small class="text-muted">Sélectionnez une image depuis la galerie ou uploadez-en une nouvelle</small>
+                        
+                        <!-- Aperçu de l'image -->
+                        <div id="imagePreview" class="mt-2" style="display: none;">
+                            <img id="previewImg" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                            <button type="button" class="btn btn-sm btn-danger ms-2" id="removeImageBtn">
+                                <i class="fa fa-times"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="ordre" class="form-label">Ordre d'affichage</label>
+                                <input type="number" class="form-control" id="ordre" name="ordre" value="0" min="0">
+                                <small class="text-muted">Plus le nombre est petit, plus la catégorie apparaît en premier</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="actif" class="form-label">Statut</label>
+                                <select class="form-select" id="actif" name="actif">
+                                    <option value="1" selected>Actif (visible sur le site)</option>
+                                    <option value="0">Inactif (masqué)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options avancées -->
+                    <div class="card mb-3" style="background: #f8f9fa;">
+                        <div class="card-header" style="background: #e9ecef;">
+                            <h6 class="mb-0">🎨 Options de personnalisation</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="supportsLogo" name="supportsLogo" value="1">
+                                <label class="form-check-label" for="supportsLogo">
+                                    <strong>Supporte les logos</strong>
+                                </label>
+                                <div class="form-text">
+                                    Si coché, les clients pourront uploader leur logo pour cette catégorie de produits. 
+                                    Sinon, seule la personnalisation par texte sera disponible.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="zmdi zmdi-check"></i> Créer la catégorie
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header" style="background: #2F4E9B; color: white;">
+                <h5 class="mb-0">💡 Conseils</h5>
+            </div>
+            <div class="card-body">
+                <h6>Nom de la catégorie</h6>
+                <p class="small">Choisissez un nom clair et descriptif. Il apparaîtra dans le menu de navigation.</p>
+
+                <h6>Ordre d'affichage</h6>
+                <p class="small">
+                    - 0 = Premier dans le menu<br>
+                    - 1 = Deuxième<br>
+                    - 2 = Troisième, etc.
+                </p>
+
+                <h6>Statut</h6>
+                <p class="small">Une catégorie inactive ne s'affiche pas sur le site mais reste accessible en admin.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('js/file-picker.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const selectImageBtn = document.getElementById('selectImageBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+
+    // Sélectionner une image existante
+    selectImageBtn.addEventListener('click', function() {
+        filePicker.open(function(path) {
+            imageInput.value = path;
+            showImagePreview(path);
+        }, 'general');
+    });
+
+    // Uploader une nouvelle image
+    uploadImageBtn.addEventListener('click', function() {
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.accept = 'image/*';
+        tempInput.style.display = 'none';
+        
+        tempInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadImage(this.files[0]);
+            }
+        });
+        
+        document.body.appendChild(tempInput);
+        tempInput.click();
+        document.body.removeChild(tempInput);
+    });
+
+    // Supprimer l'image sélectionnée
+    removeImageBtn.addEventListener('click', function() {
+        imageInput.value = '';
+        hideImagePreview();
+    });
+
+    // Fonction pour uploader une image
+    function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', 'general');
+
+        uploadImageBtn.disabled = true;
+        uploadImageBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Upload...';
+
+        fetch('/admin/files/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                imageInput.value = data.path;
+                showImagePreview(data.path);
+            } else {
+                alert('Erreur lors de l\'upload: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de l\'upload: ' + error.message);
+        })
+        .finally(() => {
+            uploadImageBtn.disabled = false;
+            uploadImageBtn.innerHTML = '<i class="fa fa-upload"></i> Uploader';
+        });
+    }
+
+    // Afficher l'aperçu de l'image
+    function showImagePreview(path) {
+        previewImg.src = path;
+        imagePreview.style.display = 'block';
+    }
+
+    // Masquer l'aperçu de l'image
+    function hideImagePreview() {
+        imagePreview.style.display = 'none';
+        previewImg.src = '';
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

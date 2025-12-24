@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ order.orderNumber }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2F4E9B;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2F4E9B;
+            margin: 0;
+            font-size: 32px;
+        }
+        .header p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .company-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .customer-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th {
+            background-color: #2F4E9B;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        .total-row {
+            background-color: #2F4E9B;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-completed {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .status-processing {
+            background-color: #17a2b8;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FACTURE</h1>
+        <p>{{ order.orderNumber }}</p>
+        <p>Date: {{ order.createdAt|date('d/m/Y à H:i') }}</p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+        <div class="company-info" style="width: 48%;">
+            <h3 style="margin-top: 0; color: #2F4E9B;">Enseignes Personnalisées</h3>
+            <p style="margin: 5px 0;">Adresse de l'entreprise</p>
+            <p style="margin: 5px 0;">Code Postal, Ville</p>
+            <p style="margin: 5px 0;">Téléphone: +33 X XX XX XX XX</p>
+            <p style="margin: 5px 0;">Email: contact@enseignes.com</p>
+        </div>
+
+        <div class="customer-info" style="width: 48%;">
+            <h3 style="margin-top: 0; color: #2F4E9B;">Client</h3>
+            <p style="margin: 5px 0;"><strong>{{ order.customerName }}</strong></p>
+            <p style="margin: 5px 0;">{{ order.customerEmail }}</p>
+            {% if order.customerPhone %}
+                <p style="margin: 5px 0;">{{ order.customerPhone }}</p>
+            {% endif %}
+            <p style="margin: 10px 0 5px 0;">
+                <span class="status-badge status-{{ order.status }}">
+                    {{ order.statusLabel }}
+                </span>
+            </p>
+        </div>
+
+    <!-- Adresses de facturation et livraison -->
+    {% if order.billingAddress or order.shippingAddress %}
+    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+        {% if order.billingAddress %}
+        <div class="customer-info" style="width: 48%;">
+            <h3 style="margin-top: 0; color: #2F4E9B;">🏠 Adresse de facturation</h3>
+            <p style="margin: 5px 0;"><strong>{{ order.billingAddress.name }}</strong></p>
+            {% if order.billingAddress.company %}
+                <p style="margin: 5px 0;">{{ order.billingAddress.company }}</p>
+            {% endif %}
+            <p style="margin: 5px 0;">{{ order.billingAddress.street }}</p>
+            {% if order.billingAddress.additionalInfo %}
+                <p style="margin: 5px 0;">{{ order.billingAddress.additionalInfo }}</p>
+            {% endif %}
+            <p style="margin: 5px 0;">{{ order.billingAddress.postalCode }} {{ order.billingAddress.city }}</p>
+            <p style="margin: 5px 0;">{{ order.billingAddress.country }}</p>
+        </div>
+        {% endif %}
+
+        {% if order.shippingAddress %}
+        <div class="customer-info" style="width: 48%;">
+            <h3 style="margin-top: 0; color: #2F4E9B;">🚚 Adresse de livraison</h3>
+            {% if order.shippingAddress.id == order.billingAddress.id %}
+                <p style="margin: 5px 0; font-style: italic; color: #666;">Identique à l'adresse de facturation</p>
+            {% else %}
+                <p style="margin: 5px 0;"><strong>{{ order.shippingAddress.name }}</strong></p>
+                {% if order.shippingAddress.company %}
+                    <p style="margin: 5px 0;">{{ order.shippingAddress.company }}</p>
+                {% endif %}
+                <p style="margin: 5px 0;">{{ order.shippingAddress.street }}</p>
+                {% if order.shippingAddress.additionalInfo %}
+                    <p style="margin: 5px 0;">{{ order.shippingAddress.additionalInfo }}</p>
+                {% endif %}
+                <p style="margin: 5px 0;">{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}</p>
+                <p style="margin: 5px 0;">{{ order.shippingAddress.country }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    </div>
+
+    <h3 style="color: #2F4E9B; margin-top: 30px;">Détails de la commande</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40%;">Produit</th>
+                <th style="width: 20%;">Dimensions</th>
+                <th style="width: 15%; text-align: right;">Prix unitaire</th>
+                <th style="width: 10%; text-align: center;">Quantité</th>
+                <th style="width: 15%; text-align: right;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.orderItems %}
+            <tr>
+                <td>
+                    {% if item.product.isLogoMode %}
+                        <strong>Logo personnalisé</strong>
+                        {% if item.product.logoFileName %}
+                            <br><small style="color: #666;">{{ item.product.logoFileName }}</small>
+                        {% endif %}
+                    {% else %}
+                        <strong>{{ item.product.text }}</strong>
+                        <br><small style="color: #666;">{{ item.product.typeEcriture }}</small>
+                    {% endif %}
+                    {% if item.product.modeleName %}
+                        <br><small style="color: #666;">{{ item.product.modeleName }}</small>
+                    {% endif %}
+                </td>
+                <td>{{ item.product.largeur }}×{{ item.product.hauteur }}cm</td>
+                <td style="text-align: right;">{{ item.price|number_format(2) }}€</td>
+                <td style="text-align: center;">{{ item.quantity }}</td>
+                <td style="text-align: right;"><strong>{{ item.subtotal|number_format(2) }}€</strong></td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="4" style="text-align: right; padding: 15px;">TOTAL TTC</td>
+                <td style="text-align: right; padding: 15px;">{{ order.total|number_format(2) }}€</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if order.notes %}
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <h4 style="margin-top: 0; color: #2F4E9B;">Notes</h4>
+        <p style="margin: 0;">{{ order.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p><strong>Enseignes Personnalisées</strong></p>
+        <p>Merci pour votre confiance</p>
+        <p style="margin-top: 10px;">
+            Cette facture a été générée automatiquement le {{ "now"|date('d/m/Y à H:i') }}
+        </p>
+    </div>
+</body>
+</html>

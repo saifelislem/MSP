@@ -38,9 +38,11 @@
                             <li class="active-menu">
                                 <a href="{{ path('app_home') }}" style="color: #222;">Accueil</a>
                             </li>
+                            {% for category in global_categories %}
                             <li>
-                                <a href="{{ path('app_cart') }}" style="color: #222;">Mon Panier</a>
+                                <a href="{{ path('category_show', {slug: category.slug}) }}" style="color: #222;">{{ category.nom }}</a>
                             </li>
+                            {% endfor %}
                         </ul>
                     </div>
                     <div class="wrap-icon-header flex-w flex-r-m">

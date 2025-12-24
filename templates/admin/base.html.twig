@@ -38,8 +38,38 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_categories' ? 'active' : '' }}" href="{{ path('admin_categories_index') }}">
+                                <i class="fa fa-folder"></i> Catégories
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_modeles' ? 'active' : '' }}" href="{{ path('admin_modeles_index') }}">
                                 <i class="fa fa-cube"></i> Modèles de lettres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_colors' ? 'active' : '' }}" href="{{ path('admin_colors_index') }}">
+                                <i class="fa fa-paint-brush"></i> Gestion des couleurs
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_files' ? 'active' : '' }}" href="{{ path('admin_files_index') }}">
+                                <i class="fa fa-folder-open"></i> Gestionnaire de Fichiers
+                            </a>
+                        </li>
+                        
+                        <!-- Section Personnalisation -->
+                        <li class="nav-item mt-3">
+                            <h6 class="text-muted px-3 mb-2" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Personnalisation</h6>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_settings' ? 'active' : '' }}" href="{{ path('admin_settings_appearance') }}">
+                                <i class="fa fa-paint-brush"></i> Apparence du Site
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.attributes.get('_route') starts with 'admin_settings_general' ? 'active' : '' }}" href="{{ path('admin_settings_general') }}">
+                                <i class="fa fa-cog"></i> Paramètres Généraux
                             </a>
                         </li>
                         <li class="nav-item mt-4">

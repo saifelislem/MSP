@@ -1,0 +1,172 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Ajouter une Couleur{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>🎨 Ajouter une Couleur</h1>
+    <a href="{{ path('admin_colors_index') }}" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nom de la couleur *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="emoji" class="form-label">Emoji</label>
+                                <input type="text" class="form-control" id="emoji" name="emoji" placeholder="🔴">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="hexCode" class="form-label">Code couleur *</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color" id="colorPicker" value="#2A2A2A">
+                                    <input type="text" class="form-control" id="hexCode" name="hexCode" value="#2A2A2A" pattern="^#[0-9A-Fa-f]{6}$" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Type d'utilisation *</label>
+                                <select class="form-select" id="type" name="type" required>
+                                    <option value="both">Façade + Côtés</option>
+                                    <option value="facade">Façade uniquement</option>
+                                    <option value="side">Côtés uniquement</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="stock" class="form-label">Stock initial *</label>
+                                <input type="number" class="form-control" id="stock" name="stock" value="50" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="minStock" class="form-label">Seuil d'alerte</label>
+                                <input type="number" class="form-control" id="minStock" name="minStock" value="5" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="sortOrder" class="form-label">Ordre d'affichage</label>
+                                <input type="number" class="form-control" id="sortOrder" name="sortOrder" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                            <label class="form-check-label" for="isActive">
+                                Couleur active (disponible pour les clients)
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="zmdi zmdi-check"></i> Ajouter la couleur
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Aperçu</h5>
+            </div>
+            <div class="card-body text-center">
+                <div id="colorPreview" style="width: 100px; height: 100px; background-color: #2A2A2A; border: 2px solid #ddd; border-radius: 10px; margin: 0 auto 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>
+                <p id="previewText"><span id="previewEmoji">🔴</span> <span id="previewName">Nom de la couleur</span></p>
+                <code id="previewHex">#2A2A2A</code>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Couleurs populaires</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #E74C3C; color: white;" onclick="setColor('#E74C3C', 'Rouge', '🔴')">Rouge</button></div>
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #3498DB; color: white;" onclick="setColor('#3498DB', 'Bleu', '🔵')">Bleu</button></div>
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #2ECC71; color: white;" onclick="setColor('#2ECC71', 'Vert', '🟢')">Vert</button></div>
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #F39C12; color: white;" onclick="setColor('#F39C12', 'Orange', '🟠')">Orange</button></div>
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #9B59B6; color: white;" onclick="setColor('#9B59B6', 'Violet', '🟣')">Violet</button></div>
+                    <div class="col-4 mb-2"><button class="btn btn-sm w-100" style="background: #2A2A2A; color: white;" onclick="setColor('#2A2A2A', 'Noir', '⚫')">Noir</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const colorPicker = document.getElementById('colorPicker');
+        const hexCode = document.getElementById('hexCode');
+        const nameInput = document.getElementById('name');
+        const emojiInput = document.getElementById('emoji');
+        const colorPreview = document.getElementById('colorPreview');
+        const previewText = document.getElementById('previewText');
+        const previewName = document.getElementById('previewName');
+        const previewEmoji = document.getElementById('previewEmoji');
+        const previewHex = document.getElementById('previewHex');
+
+        function updatePreview() {
+            const color = hexCode.value;
+            const name = nameInput.value || 'Nom de la couleur';
+            const emoji = emojiInput.value || '🔴';
+
+            colorPreview.style.backgroundColor = color;
+            previewName.textContent = name;
+            previewEmoji.textContent = emoji;
+            previewHex.textContent = color;
+        }
+
+        colorPicker.addEventListener('input', function() {
+            hexCode.value = this.value.toUpperCase();
+            updatePreview();
+        });
+
+        hexCode.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                colorPicker.value = this.value;
+                updatePreview();
+            }
+        });
+
+        nameInput.addEventListener('input', updatePreview);
+        emojiInput.addEventListener('input', updatePreview);
+
+        function setColor(hex, name, emoji) {
+            hexCode.value = hex;
+            colorPicker.value = hex;
+            nameInput.value = name;
+            emojiInput.value = emoji;
+            updatePreview();
+        }
+
+        // Initialiser l'aperçu
+        updatePreview();
+    </script>
+{% endblock %}

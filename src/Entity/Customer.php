@@ -42,9 +42,13 @@ class Customer
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
     private Collection $orders;
 
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'customer', cascade: ['persist', 'remove'])]
+    private Collection $addresses;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
+        $this->addresses = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -168,6 +172,43 @@ class Customer
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setCustomer($this);
+        }
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            if ($address->getCustomer() === $this) {
+                $address->setCustomer(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getDefaultAddress(): ?Address
+    {
+        foreach ($this->addresses as $address) {
+            if ($address->isDefault()) {
+                return $address;
+            }
+        }
+        return $this->addresses->first() ?: null;
     }
 
     public function getFullName(): string

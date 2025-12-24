@@ -1,0 +1,266 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Configuration Prix - {{ product.modeleName ?? 'Produit #' ~ product.id }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>💰 Configuration Prix</h1>
+    <a href="{{ path('admin_pricing_index') }}" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> Retour à la Liste
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ product.modeleName ?? 'Produit #' ~ product.id }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Type de calcul -->
+                    <div class="mb-3">
+                        <label class="form-label">Type de Calcul</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="use_custom_pricing" value="0" 
+                                   id="fixed_price" {{ not product.useCustomPricing ? 'checked' : '' }}>
+                            <label class="form-check-label" for="fixed_price">
+                                Prix Fixe (utilise le prix standard du produit)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="use_custom_pricing" value="1" 
+                                   id="custom_price" {{ product.useCustomPricing ? 'checked' : '' }}>
+                            <label class="form-check-label" for="custom_price">
+                                Prix Personnalisé (calcul basé sur les dimensions)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Configuration prix personnalisé -->
+                    <div id="custom-pricing-config" style="display: {{ product.useCustomPricing ? 'block' : 'none' }};">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="base_price" class="form-label">Prix de Base (€)</label>
+                                    <input type="number" class="form-control" id="base_price" name="base_price" 
+                                           value="{{ product.basePrice }}" step="0.01" min="0">
+                                    <small class="form-text text-muted">Prix minimum du produit</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price_per_unit" class="form-label">Prix par Unité (€)</label>
+                                    <input type="number" class="form-control" id="price_per_unit" name="price_per_unit" 
+                                           value="{{ product.pricePerUnit }}" step="0.01" min="0">
+                                    <small class="form-text text-muted">Prix ajouté selon les dimensions</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pricing_unit" class="form-label">Unité de Calcul</label>
+                            <select class="form-select" id="pricing_unit" name="pricing_unit">
+                                <option value="cm" {{ product.pricingUnit == 'cm' ? 'selected' : '' }}>
+                                    Centimètres carrés (cm²) - Surface
+                                </option>
+                                <option value="m" {{ product.pricingUnit == 'm' ? 'selected' : '' }}>
+                                    Mètres carrés (m²) - Surface
+                                </option>
+                                <option value="linear_cm" {{ product.pricingUnit == 'linear_cm' ? 'selected' : '' }}>
+                                    Centimètres linéaires (cm) - Longueur
+                                </option>
+                                <option value="linear_m" {{ product.pricingUnit == 'linear_m' ? 'selected' : '' }}>
+                                    Mètres linéaires (m) - Longueur
+                                </option>
+                                <option value="piece" {{ product.pricingUnit == 'piece' ? 'selected' : '' }}>
+                                    Par pièce - Quantité
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Formule personnalisée (optionnel) -->
+                        <div class="mb-3">
+                            <label for="pricing_formula" class="form-label">Formule Personnalisée (Optionnel)</label>
+                            <textarea class="form-control" id="pricing_formula" name="pricing_formula" rows="3" 
+                                      placeholder="Ex: {base_price} + ({length} * {width} * {price_per_unit})">{{ product.pricingFormula }}</textarea>
+                            <small class="form-text text-muted">
+                                Laissez vide pour utiliser le calcul automatique. 
+                                Variables disponibles : {base_price}, {price_per_unit}, {length}, {width}, {height}, {quantity}, {surface}, {perimeter}
+                            </small>
+                        </div>
+
+                        <!-- Facteurs personnalisés -->
+                        <div class="mb-3">
+                            <label class="form-label">Facteurs Personnalisés</label>
+                            <div id="custom-factors">
+                                {% if product.pricingFactors %}
+                                    {% for factor in product.pricingFactors %}
+                                        <div class="row mb-2 factor-row">
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control" name="factor_names[]" 
+                                                       value="{{ factor.name }}" placeholder="Nom (ex: thickness)">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control" name="factor_labels[]" 
+                                                       value="{{ factor.label }}" placeholder="Libellé (ex: Épaisseur)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <select class="form-select" name="factor_types[]">
+                                                    <option value="number" {{ factor.type == 'number' ? 'selected' : '' }}>Nombre</option>
+                                                    <option value="text" {{ factor.type == 'text' ? 'selected' : '' }}>Texte</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control" name="factor_defaults[]" 
+                                                       value="{{ factor.default }}" placeholder="Défaut">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-sm btn-danger remove-factor">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-sm btn-success" id="add-factor">
+                                <i class="fa fa-plus"></i> Ajouter un Facteur
+                            </button>
+                            <small class="form-text text-muted">
+                                Les facteurs personnalisés peuvent être utilisés dans la formule avec {nom_du_facteur}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Sauvegarder
+                        </button>
+                        <button type="button" class="btn btn-info" id="test-formula">
+                            <i class="fa fa-calculator"></i> Tester le Calcul
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Aperçu du Calcul</h5>
+            </div>
+            <div class="card-body">
+                <div id="price-preview">
+                    <p class="text-muted">Configurez les paramètres pour voir l'aperçu</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Variables Disponibles</h5>
+            </div>
+            <div class="card-body">
+                <small>
+                    {% for variable, description in available_variables %}
+                        <strong>{{{ variable }}}</strong> : {{ description }}<br>
+                    {% endfor %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const customPriceRadio = document.getElementById('custom_price');
+    const fixedPriceRadio = document.getElementById('fixed_price');
+    const customConfig = document.getElementById('custom-pricing-config');
+
+    function toggleCustomConfig() {
+        customConfig.style.display = customPriceRadio.checked ? 'block' : 'none';
+    }
+
+    customPriceRadio.addEventListener('change', toggleCustomConfig);
+    fixedPriceRadio.addEventListener('change', toggleCustomConfig);
+
+    // Gestion des facteurs personnalisés
+    document.getElementById('add-factor').addEventListener('click', function() {
+        const factorsContainer = document.getElementById('custom-factors');
+        const newRow = document.createElement('div');
+        newRow.className = 'row mb-2 factor-row';
+        newRow.innerHTML = `
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="factor_names[]" placeholder="Nom (ex: thickness)">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="factor_labels[]" placeholder="Libellé (ex: Épaisseur)">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="factor_types[]">
+                    <option value="number">Nombre</option>
+                    <option value="text">Texte</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" name="factor_defaults[]" placeholder="Défaut">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-sm btn-danger remove-factor">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        `;
+        factorsContainer.appendChild(newRow);
+    });
+
+    // Supprimer un facteur
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-factor')) {
+            e.target.closest('.factor-row').remove();
+        }
+    });
+
+    // Test du calcul
+    document.getElementById('test-formula').addEventListener('click', function() {
+        // Simuler un test avec des dimensions par défaut
+        const testData = {
+            length: 50,
+            width: 20,
+            height: 0.5,
+            quantity: 1
+        };
+
+        fetch(`/api/pricing/calculate/{{ product.id }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                dimensions: testData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('price-preview').innerHTML = `
+                <h6>Test avec :</h6>
+                <ul>
+                    <li>Largeur : ${testData.length} cm</li>
+                    <li>Hauteur : ${testData.width} cm</li>
+                    <li>Quantité : ${testData.quantity}</li>
+                </ul>
+                <hr>
+                <h5 class="text-success">Prix calculé : ${data.formatted_price}</h5>
+            `;
+        })
+        .catch(error => {
+            document.getElementById('price-preview').innerHTML = `
+                <div class="alert alert-danger">Erreur lors du test : ${error.message}</div>
+            `;
+        });
+    });
+});
+</script>
+{% endblock %}
