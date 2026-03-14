@@ -25,6 +25,7 @@ class CartController extends AbstractController
     }
 
     #[Route('/', name: 'app_cart', methods: ['GET'])]
+    #[Route('/panier', name: 'app_panier', methods: ['GET'])]
     public function index(): Response
     {
         $cart = $this->cartService->getCurrentCart();

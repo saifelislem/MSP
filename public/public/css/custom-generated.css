@@ -1,19 +1,19 @@
 /* CSS généré automatiquement depuis les paramètres du site */
 
 :root {
-  --primary-color: #2f4e9b;
+  --primary-color: #121212;
   --secondary-color: #8a92ad;
   --accent-color: #daddeb;
   --success-color: #28a745;
   --warning-color: #ffc107;
-  --danger-color: #dc3545;
+  --danger-color: #ffffff;
 }
 
 /* Boutons personnalisés */
 .btn-primary, .bg3 {
-  background-color: #2f4e9b !important;
+  background-color: #9c3030 !important;
   color: #ffffff !important;
-  border-color: #2f4e9b !important;
+  border-color: #9c3030 !important;
 }
 
 .btn-secondary {
@@ -24,7 +24,7 @@
 
 /* Couleurs du thème */
 .cl2, .mtext-105.cl2, .ltext-109.cl2 {
-  color: #2f4e9b !important;
+  color: #121212 !important;
 }
 
 .bor13, .bor14 {
